@@ -22,7 +22,7 @@ quarkus:
   # Docker-inställningar
   container-image:
     build: true
-    group: GredorTools
+    group: gredortools
     name: gredor-backend
     tag: latest
   jib:
