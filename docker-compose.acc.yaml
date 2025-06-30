@@ -5,8 +5,8 @@ services:
     ports:
       - "8080:23180"
     networks:
-      - backend-acc
+      - gredor-acc
 
 networks:
-  backend:
-    name: quarkus-backend-acc-network
+  gredor-acc:
+    name: gredor-acc-network
