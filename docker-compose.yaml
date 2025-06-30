@@ -1,6 +1,6 @@
 services:
   backend:
-    image: gredor/backend:latest
+    image: GredorTools/gredor-backend:latest
     restart: unless-stopped
     ports:
       - "8080:8080"

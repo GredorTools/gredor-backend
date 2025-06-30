@@ -22,8 +22,8 @@ quarkus:
   # Docker-inställningar
   container-image:
     build: true
-    group: gredor
-    name: backend
+    group: GredorTools
+    name: gredor-backend
     tag: latest
   jib:
     ports: 8080
