@@ -2,3 +2,5 @@ services:
   backend:
     environment:
       QUARKUS_PROFILE: "acc"
+    ports:
+      - "8080:23180"
