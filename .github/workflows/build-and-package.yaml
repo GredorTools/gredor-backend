@@ -46,9 +46,8 @@ jobs:
 
       - name: Prepare push to registry
         run: |
-          IMAGE_NAME_LOWERCASE=${GITHUB_REPOSITORY@L}
-          echo "IMAGE_NAME_LOWERCASE=$IMAGE_NAME_LOWERCASE" >> ${GITHUB_ENV}
-          echo "IMAGE_DIGEST=$(docker images --no-trunc --quiet $REGISTRY/$IMAGE_NAME_LOWERCASE)" >> ${GITHUB_ENV}
+          echo "IMAGE_NAME_LOWERCASE=${GITHUB_REPOSITORY@L}" >> ${GITHUB_ENV}
+          echo "IMAGE_DIGEST=$(cat build/jib-image.digest)" >> ${GITHUB_ENV}
 
       - name: Push to registry
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }}:${{ env.PROJECT_VERSION }}
