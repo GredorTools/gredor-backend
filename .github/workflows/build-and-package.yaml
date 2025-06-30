@@ -52,6 +52,16 @@ jobs:
 
       - name: Prepare generate artifact attestation
         run: |
+          echo $IMAGE_NAME_LOWERCASE
+          echo "---"
+          echo $(docker images --no-trunc --quiet)
+          echo "---"
+          echo $(docker images)
+          echo "---"
+          echo docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE
+          echo "---"
+          echo $(docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE)
+          echo "---"
           echo "IMAGE_DIGEST=$(docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE)" >> ${GITHUB_ENV}
 
       - name: Generate artifact attestation
