@@ -45,24 +45,12 @@ jobs:
 
       - name: Prepare push to registry
         run: |
-          echo "IMAGE_NAME_LOWERCASE=${GITHUB_REPOSITORY@L}" >> ${GITHUB_ENV}
+          IMAGE_NAME_LOWERCASE=${GITHUB_REPOSITORY@L}
+          echo "IMAGE_NAME_LOWERCASE=$IMAGE_NAME_LOWERCASE" >> ${GITHUB_ENV}
+          echo "IMAGE_DIGEST=$(docker images --no-trunc --quiet $REGISTRY/$IMAGE_NAME_LOWERCASE)" >> ${GITHUB_ENV}
 
       - name: Push to registry
         run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }}:${{ env.PROJECT_VERSION }}
-
-      - name: Prepare generate artifact attestation
-        run: |
-          echo $IMAGE_NAME_LOWERCASE
-          echo "---"
-          echo $(docker images --no-trunc --quiet)
-          echo "---"
-          echo $(docker images)
-          echo "---"
-          echo docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE
-          echo "---"
-          echo $(docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE)
-          echo "---"
-          echo "IMAGE_DIGEST=$(docker images --no-trunc --quiet $IMAGE_NAME_LOWERCASE)" >> ${GITHUB_ENV}
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
