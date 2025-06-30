@@ -135,19 +135,19 @@ class SubmissionFlowResource {
         }
 
         val pdfByte = authenticatableRequest.signedPdf
-        val doc = Loader.loadPDF(pdfByte)
+        Loader.loadPDF(pdfByte).use { doc ->
+            val (isDocumentSignatureValid, isCertificateTrusted) = documentHelper.verifyDocument(doc, pdfByte)
+            if (!isDocumentSignatureValid || !isCertificateTrusted) {
+                return false
+            }
 
-        val (isDocumentSignatureValid, isCertificateTrusted) = documentHelper.verifyDocument(doc, pdfByte)
-        if (!isDocumentSignatureValid || !isCertificateTrusted) {
-            return false
+            val hasValidSigner =
+                documentHelper.documentHasValidSigner(
+                    doc,
+                    authenticatableRequest.signerPnr,
+                    authenticatableRequest.companyOrgnr
+                )
+            return hasValidSigner
         }
-
-        val hasValidSigner =
-            documentHelper.documentHasValidSigner(
-                doc,
-                authenticatableRequest.signerPnr,
-                authenticatableRequest.companyOrgnr
-            )
-        return hasValidSigner
     }
 }
