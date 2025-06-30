@@ -1,0 +1,4 @@
+services:
+  backend:
+    environment:
+      QUARKUS_PROFILE: "dev"

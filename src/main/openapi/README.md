@@ -1,0 +1,2 @@
+Hämtas från:
+https://bolagsverket.se/omoss/utvecklingavdigitalatjanster/digitalinlamningavarsredovisning/gallandeservicespecifikationerfordigitalinlamningavarsredovisning.2269.html

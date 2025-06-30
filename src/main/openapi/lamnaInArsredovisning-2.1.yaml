@@ -1,0 +1,425 @@
+swagger: '2.0'
+info:
+  description: Bolagsverkets API för inlämning av digitala årsredovisningar
+  version: '2.1'
+  title: API för inlämning av digitala årsredovisningar
+  contact:
+    name: Bolagsverkets grupp för digitala årsredovisningar
+    email: emsdiar@bolagsverket.se
+  license:
+    name: Offentlig handling enligt Tryckfrihetsförordningen 2 Kap 3 §
+    url: 'http://www.notisum.se/rnp/sls/lag/19490105.htm#K2P3'
+host: api.bolagsverket.se
+basePath: /lamna-in-arsredovisning/v2.1
+schemes:
+  - https
+tags:
+  - name: inlamning
+    description: Tjänster som tar emot årsredovisning för underskrift
+  - name: kontroll
+    description: Tjänster som kan användas som ett komplement till inlämning av årsredovisning
+paths:
+  '/skapa-inlamningtoken':
+    post:
+      tags:
+        - inlamning
+      summary: Skapa token för kontroll och inlämning till eget utrymme
+      description: >-
+        Tjänsten skapar token för användning vid kontroll och inlämning av digital årsredovisning.
+        Samma token används både som kontrolltoken i operation /kontrollera/{kontrolltoken} och
+        som inlamningtoken i operation /inlamning/{inlamningtoken}.
+      operationId: skapa-inlamningtoken
+      consumes:
+        - application/json;charset=utf-8
+      produces:
+        - application/json;charset=utf-8
+      parameters:
+        - name: anropsobjekt
+          description: Personnummer och organisationsnummer
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SkapaInlamningTokenAnrop'
+      responses:
+        '200':
+          description: Uppgifter mottagna
+          schema:
+            $ref: '#/definitions/SkapaTokenOK'
+        '400':
+          description: Felaktig request
+          schema:
+            $ref: '#/definitions/Fel'
+        '403':
+          description: Obehörig användare av tjänsten
+          schema:
+            $ref: '#/definitions/Fel' 
+        '404':
+          description: Personnummer saknas
+          schema:
+            $ref: '#/definitions/Fel'
+        '500':
+          description: Ospecificerat tekniskt fel
+          schema:
+            $ref: '#/definitions/Fel'
+        '503':
+          description: Tjänsten temporärt otillgänglig
+          schema:
+            $ref: '#/definitions/Fel'
+        '504':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Fel'
+  '/inlamning/{inlamningtoken}':
+    post:
+      tags:
+        - inlamning
+      summary: Lämna in årsredovisning till eget utrymme för granskning och underskrift.
+      description: >-
+        Tjänsten kontrollerar att en digital årsredovisning är tekniskt korrekt och lägger
+        den i eget utrymme.
+        
+        Om kontrollen går bra returnerar den här operationen http status 200 och inget mer
+        behöver göras via API (årsredovisningen ska skrivas under senare via webben).
+      operationId: inlamning
+      consumes:
+        - "application/json;charset=utf-8"
+      produces:
+        - "application/json;charset=utf-8"
+      parameters:
+        - name: inlamningtoken
+          in: path
+          description: Token för inlämning
+          required: true
+          type: string
+          format: uuid
+        - name: anropsobjekt
+          description: Andra uppgifter och själva årsredovisningen
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InlamningAnrop'
+      responses:
+        '200':
+          description: >-
+            Årsredovisning är inlämnad till eget utrymme för senare underskrift
+            via webben.
+          schema:
+            $ref: '#/definitions/InlamningOK'
+        '400':
+          description: Felaktig request
+          schema:
+            $ref: '#/definitions/Fel'
+        '403':
+          description: Obehörig användare av tjänsten
+          schema:
+            $ref: '#/definitions/Fel' 
+        '404':
+          description: Organisationsnummer saknas
+          schema:
+            $ref: '#/definitions/Fel'
+        '500':
+          description: Ospecificerat tekniskt fel
+          schema:
+            $ref: '#/definitions/Fel'
+        '503':
+          description: Tjänsten temporärt otillgänglig
+          schema:
+            $ref: '#/definitions/Fel'
+        '504':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Fel'
+  '/kontrollera/{kontrolltoken}':
+    post:
+      tags:
+        - kontroll
+      summary: Kontrollera årsredovisning innan uppladdning till eget utrymme
+      operationId: kontrollera
+      consumes:
+        - "application/json;charset=utf-8"
+      produces:
+        - "application/json;charset=utf-8"
+      parameters:
+        - name: kontrolltoken
+          in: path
+          description: Token för kontroll
+          required: true
+          type: string
+          format: uuid
+        - name: anropsobjekt
+          description: Själva årsredovisningen
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/KontrolleraAnrop'
+      responses:
+        '200':
+          description: >-
+            Årsredovisning är kontrollerad, se utfall. Användaren av programvaran bör upplysas om dessa eventuella utfall.
+            Årsredovisningen kan dock lämnas in till eget utrymme oavsett utfall eller inte.
+          schema:
+            $ref: '#/definitions/KontrolleraSvar'
+        '400':
+          description: Felaktig request
+          schema:
+            $ref: '#/definitions/Fel'
+        '403':
+          description: Obehörig användare av tjänsten
+          schema:
+            $ref: '#/definitions/Fel' 
+        '500':
+          description: Ospecificerat tekniskt fel
+          schema:
+            $ref: '#/definitions/Fel'
+        '503':
+          description: Tjänsten temporärt otillgänglig
+          schema:
+            $ref: '#/definitions/Fel'
+        '504':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Fel'
+            
+parameters:
+  orgnrPathParam:
+    name: orgnr
+    in: path
+    required: true
+    type: string
+    pattern: '[0-9]{10}'
+    description: 'Organisationsnummer för aktiebolaget. Tio siffror, inget bindestreck'
+
+definitions:
+  Upplysning:
+    type: object
+    description: Innehåller mer detaljerad information om ett fel el dyl.
+    properties:
+      kod:
+        type: integer
+        format: int32
+        description: Kod som beskriver upplysningen. Beskrivs i separat dokument.
+      text:
+        type: string
+        description: Förklarande text till upplysningen.
+      typ:
+        type: string
+        description: Upplysningens karaktär - information, varning eller fel.
+        enum:
+          - info
+          - warn
+          - error
+    required: ["kod", "text", "typ"]
+  Fel:
+    type: object
+    description: Beskriver fel.
+    properties:
+      kod:
+        type: integer
+        format: int32
+        description: Kod som beskriver felet. Beskrivs i separat dokument.
+      text:
+        type: string
+        description: Förklarande text till felet.
+      detaljinformation:
+        type: array
+        description: Detaljupplysningar om felet
+        items:
+          $ref: '#/definitions/Upplysning'
+    required: ["kod", "text"]
+  SkapaTokenOK:
+    type: object
+    properties:
+      token:
+        type: string
+        format: uuid
+        description: Token för kontroll och inlämning
+      avtalstext:
+        type: string
+        description: Text att visa för slutanvändaren.
+      avtalstextAndrad:
+        type: string
+        format: date
+        description: Datum då avtalstexten senast ändrades.
+    required: ["token"]
+  InlamningOK:
+    type: object
+    properties:
+      orgnr:
+        type: string
+        pattern: '[0-9]{10}'
+        description: 'Organisationsnummer för aktiebolaget. Tio siffror, inget bindestreck'
+      avsandare:
+        description: Personnummer inkl sekel på person som handlingen lagrats på
+        type: string
+        pattern: '(19|20)[0-9]{10}'
+      undertecknare:
+        description: Personnummer för undertecknare inkl sekel
+        type: string
+        pattern: '(19|20)[0-9]{10}'
+      handlingsinfo:
+        $ref: '#/definitions/Handlingsinfo'
+      url:
+        type: string
+        description: >-
+            Vid uppladdning av årsredovisning returneras url där inskick sker.
+    required: ["orgnr", "avsandare", "undertecknare", "handlingsinfon"]
+  SkapaInlamningTokenAnrop:
+    type: object
+    description: Anropsobjekt för personnummer och organisationsnummer
+    properties:
+      pnr:
+        description: Personnummer inkl sekel på person som handlingen ska lagras på.
+        type: string
+        pattern: '(19|20)[0-9]{10}'
+      orgnr:
+        type: string
+        pattern: '[0-9]{10}'
+        description: 'Organisationsnummer för aktiebolaget. Tio siffror, inget bindestreck'
+    required: ["pnr", "orgnr"]
+  InlamningAnrop:
+    type: object
+    description: Anropsobjekt för inlämning av årsredovisning till eget utrymme
+    properties:
+      undertecknare:
+        description: Personnummer för undertecknare inkl sekel
+        type: string
+        pattern: '(19|20)[0-9]{10}'
+      epostadresser:
+        description: >-
+            Vid inlämning av årsredovisning används epostadresser till att meddela att det finns en årsredovisning att underteckna.
+        type: array
+        items:
+          type: string
+          minLength: 6
+          maxLength: 250
+      kvittensepostadresser:
+        description: >-
+            Används till att meddela när handlingen är undertecknad och inskickad till Bolagsverket.
+        type: array
+        items:
+          type: string
+          minLength: 6
+          maxLength: 250
+      notifieringEpostadresser:
+        description: >-
+            Vid inlämning av årsredovisning eller revisionsberättelse används notifieringEpostadresser till att meddela redovisningskonsult eller revisor att en handling är uppladdad.
+            Om exempelvis anropet avser uppladdning av årsredovisning anger man här e-postadress till revisor så att hen meddelas att det förväntas laddas upp en revisionsberättelse.
+            På motsvarande sätt kan man meddela en redovisningskonsult om uppladdningen gäller en revisionsberättelse.
+        type: array
+        items:
+          type: string
+          minLength: 6
+          maxLength: 250
+      handling:
+        $ref: '#/definitions/Handling'
+    required: ["undertecknare", "handling"]
+  Handling:
+    type: object
+    description: En handling och den typ som avses.
+    properties:
+      fil:
+        type: string
+        format: byte
+        description: T.ex. årsredovisning i iXBRL-format. Filen ska ha charset UTF-8.
+      typ:
+        type: string
+        description: >-
+            Beskriver filen med den typ som avses.
+            Skickar man in årsredovisningen med revisionsberättelsen i samma fil
+            eller utan revisionsberättelse (där det inte krävs någon) väljer man typen arsredovisning_komplett.
+            Avser man att lämna in en årsredovisning med en revisionsberättelse som en separat fil
+            ska man välja typen arsredovisning_kompletteras.
+        enum:
+          - arsredovisning_komplett
+          - arsredovisning_kompletteras
+          - revisionsberattelse
+    required: ["fil", "typ"]
+  Handlingsinfo:
+    type: object
+    description: Information om den inskickade handlingen.
+    properties:
+      typ:
+        type: string
+        description: >-
+            Beskriver filen med den typ som avses.
+            Skickar man in årsredovisningen med revisionsberättelsen i samma fil
+            eller utan revisionsberättelse (där det inte krävs någon) väljer man typen arsredovisning_komplett.
+            Avser man att lämna in en årsredovisning med en revisionsberättelse som en separat fil
+            ska man välja typen arsredovisning_kompletteras.
+        enum:
+          - arsredovisning_komplett
+          - arsredovisning_kompletteras
+          - revisionsberattelse
+      dokumentlangd:
+        type: integer
+        format: int32
+        description: Det inskickade dokumentets längd i bytes
+      idnummer:
+        type: string
+        description: >-
+          Identifieringsnummer för dokumentet i avsändarens eget utrymme.
+          Numret ska inte visas för användare men kan användas till teknisk felsökning.
+      sha256checksumma:
+        type: string
+        format: byte
+        description: SHA-256-checksumma på det inskickade dokumentet
+    required: ["typ", "dokumentlangd", "idnummer", "sha256checksumma"]
+  KontrolleraAnrop:
+    type: object
+    description: Anropsobjekt för att kontrollera filen innan uppladdning till eget utrymme
+    properties:
+      handling:
+        $ref: '#/definitions/Handling'
+    required: ["handling"]
+  
+  KontrolleraSvar:
+    type: object
+    description: Resultat av kontrollerad årsredovisning
+    properties:
+      orgnr:
+        type: string
+        pattern: '[0-9]{10}'
+        description: 'Organisationsnummer för aktiebolaget. Tio siffror, inget bindestreck'
+      utfall:
+        type: array
+        description: Lista med utfall vid kontroll
+        items:
+          $ref: '#/definitions/KontrolleraUtfall'
+
+  KontrolleraUtfall:
+    type: object
+    description: Utfall från kontroll.
+    properties:
+      kod:
+        type: string
+        description: Kod som motsvarar utfallet. Beskrivs i separat dokument.
+      text:
+        type: string
+        description: Förklarande text till utfallet.
+      typ:
+        type: string
+        description: Utfallets karaktär - information, varning eller fel.
+        enum:
+          - info
+          - warn
+          - error
+      tekniskinformation:
+        type: array
+        description: Teknisk information om utfallet, endast för loggning och felsökning.
+        items:
+          $ref: '#/definitions/KontrolleraUtfallTekniskInformation'
+    required: ["kod", "text", "typ"]
+  KontrolleraUtfallTekniskInformation:
+    type: object
+    description: Teknisk information om utfallet.
+    properties:
+      meddelande: 
+        type: string
+        description: Tekniskt meddelande
+      element:
+        type: string
+      varde:
+        type: string
+externalDocs:
+  description: Information om digitala årsredovisningar
+  url: 'http://bolagsverket.se/om/oss/utveckling-av-digitala-tjanster/digital-ingivning'

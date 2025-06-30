@@ -1,0 +1,364 @@
+swagger: '2.0'
+info:
+  description: Bolagsverkets API för grunduppgifter och ärendestatus för organisationer
+  version: '1.4'
+  title: API för att hämta grunduppgifter och ärendestatus
+  contact:
+    name: Bolagsverkets grupp för digitala årsredovisningar
+    email: emsdiar@bolagsverket.se
+  license:
+    name: Offentlig handling enligt Tryckfrihetsförordningen 2 Kap 3 §
+    url: 'http://www.notisum.se/rnp/sls/lag/19490105.htm#K2P3'
+
+externalDocs:
+  description: Information om digitala årsredovisningar
+  url: 'http://bolagsverket.se/om/oss/utveckling-av-digitala-tjanster/digital-ingivning'
+
+host: api.bolagsverket.se
+basePath: /hamta-arsredovisningsinformation/v1.4
+schemes:
+  - https
+tags:
+  - name: information
+    description: Tjänster som lämnar information
+paths:
+  '/grunduppgifter/{orgnr}':
+    get:
+      tags:
+        - information
+      summary: Hämta grunduppgifter om organisation
+      description: >-
+        Tjänsten levererar information om organisationer. Informationen lämpar sig
+        för upprättande av årsredovisningar.
+      operationId: grunduppgifter
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - $ref: '#/parameters/orgnrPathParam'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Grunduppgifter'
+        '400':
+          description: Felaktig request
+          schema:
+            $ref: '#/definitions/Fel'
+        '403':
+          description: Obehörig användare av tjänsten
+          schema:
+            $ref: '#/definitions/Fel'          
+        '404':
+          description: Organisationsnummer saknas
+          schema:
+            $ref: '#/definitions/Fel'
+        '500':
+          description: Ospecificerat tekniskt fel
+          schema:
+            $ref: '#/definitions/Fel'
+        '503':
+          description: Tjänsten temporärt otillgänglig
+          schema:
+            $ref: '#/definitions/Fel'
+        '504':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Fel'
+
+  '/arendestatus/{orgnr}':
+    get:
+      tags:
+        - information
+      summary: Hämta ärendestatus för organisation
+      description: >-
+        Tjänsten levererar information om senaste händelse som rör årsredovisningen för en organisation.
+      operationId: arendestatus
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - $ref: '#/parameters/orgnrPathParam'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Arendestatus'
+        '400':
+          description: Felaktig request
+          schema:
+            $ref: '#/definitions/Fel'
+        '403':
+          description: Obehörig användare av tjänsten
+          schema:
+            $ref: '#/definitions/Fel' 
+        '404':
+          description: Organisationsnummer saknas
+          schema:
+            $ref: '#/definitions/Fel'
+        '500':
+          description: Ospecificerat tekniskt fel
+          schema:
+            $ref: '#/definitions/Fel'
+        '503':
+          description: Tjänsten temporärt otillgänglig
+          schema:
+            $ref: '#/definitions/Fel'
+        '504':
+          description: Timeout
+          schema:
+            $ref: '#/definitions/Fel'
+
+parameters:
+  orgnrPathParam:
+    name: orgnr
+    in: path
+    required: true
+    type: string
+    pattern: '[0-9]{10}'
+    description: 'Organisationsnummer för organisationen. Tio siffror, inget bindestreck'
+
+definitions:
+  Upplysning:
+    type: object
+    description: Innehåller mer detaljerad information om ett fel el dyl.
+    properties:
+      kod:
+        type: integer
+        format: int32
+        description: Kod som beskriver upplysningen. Beskrivs i separat dokument.
+      text:
+        type: string
+        description: Förklarande text till upplysningen.
+      typ:
+        type: string
+        description: Upplysningens karaktär - information, varning eller fel.
+        enum:
+          - info
+          - warn
+          - error
+    required: ["kod", "text", "typ"]
+  Fel:
+    type: object
+    description: Beskriver fel.
+    properties:
+      kod:
+        type: integer
+        format: int32
+        description: Kod som beskriver felet. Beskrivs i separat dokument.
+      text:
+        type: string
+        description: Förklarande text till felet.
+      detaljinformation:
+        type: array
+        description: Detaljupplysningar om felet
+        items:
+          $ref: '#/definitions/Upplysning'
+    required: ["kod", "text"]
+
+  Grunduppgifter:
+    type: object
+    description: Uppgifter om en organisation som kan vara till nytta för upprättande av årsredovisning
+    properties:
+      orgnr:
+        type: string
+        pattern: '[0-9]{10}'
+        description: 'Organisationsnummer för organisationen. Tio siffror, inget bindestreck'
+      lopnummer:
+        type: integer
+        format: int32
+        minimum: 1
+        description: 'Löpnummer för organisationen. Används endast då det finns flera företagsnamn för ett organisationsnummer, tex för ideella föreningar'
+        example: null
+      namn:
+        type: string
+        maxLength: 200
+        description: Organisationens namn så som det är registrerat i Bolagsverkets register
+        example: Exempel AB
+      status:
+        type: array
+        items:
+          $ref: '#/definitions/Foretagstatus'
+      rakenskapsperioder:
+        type: array
+        description: De fyra senaste räkenskapsperioderna. För nystartade organisationer visas innevarande räkenskapsperiod.
+        items:
+          $ref: '#/definitions/Rakenskapsperiod'
+      foretradare:
+        type: array
+        description: Information om registrerade företrädare för en organisation
+        items: 
+          $ref: '#/definitions/Foretradare'
+    required: ["orgnr", "namn"]
+  Foretagstatus:
+    type: object
+    description: Information om företagets status.
+    properties:
+      kod:
+        type: string
+        description: Kod för status
+        pattern: '[0-9]{2}'
+      text:
+        type: string
+        description: Text för status
+      datum:
+        type: string
+        format: date
+        description: Datum för status
+  Rakenskapsperiod:
+    type: object
+    description: >-
+      Information om organisationens räkenskapsperiod.
+      För nybildade aktiebolag som ännu inte avslutat sitt första räkenskapsår
+      är det här information om den räkenskapsperiod som kommer gälla för
+      den första årsredovisningen.
+      För äldre aktiebolag är det här information om aktiebolagets fyra senaste
+      avslutade räkenskapsperioder.
+      
+      - Exempel 1: om ett aktiebolag bildat 15 juni 2018 har kalenderår som
+      räkenskapsperiod och frågan ställs den 25 december 2018 så är
+      räkenskapsperioden 15 juni 2018 till och med 31 december 2018.
+      
+      - Exempel 2: antag att ett aktiebolag har årsredovisningar att lämna in
+      både för perioden 1 december 2017 till och med 31 december 2017 och
+      1 januari 2018 till och med 31 december 2018.
+      Om frågan ställs den 31 december 2018 är räkenskapsperioderna
+      1 december 2017 till och med 31 december 2017 plus de tre föregående.
+      Om frågan istället ställs 1 januari 2019 är räkenskapsperioderna
+      1 januari 2018 till och med 31 december 2018 plus de tre föregående.
+    properties:
+      from:
+        type: string
+        format: date
+        description: Första datum i organisationens räkenskapsperiod
+        example: "2023-01-01"
+      tom:
+        type: string
+        format: date
+        description: Sista datum i organisationens räkenskapsperiod
+        example: "2023-12-31"
+      kravPaRevisionsberattelse:
+        type: string
+        description: |-
+          Krav på revisionsberättelse. Uppgiften grundas på registrerade uppgifter i Bolagsverkets register.
+          - ja revisionsberättelse krävs för räkenskapsperioden.
+          - nej revisionsberättelse krävs inte för räkenskapsperioden.
+          - uppgift_saknas uppgift om krav på revisionsberättelse saknas. T.ex. vid nystartade företag där perioden inte passerat.
+        enum:
+          - ja
+          - nej
+          - uppgift_saknas
+      revisorsplikt:
+        type: string
+        description: |-
+          Revisorsplikt. Uppgiften beräknas endast för senaste räkenskapsperioden och för det enskilda företaget. 
+          För tidigare räkenskapsperioder beräknas inte uppgiften och dessa perioder får då värde uppgift_saknas.
+          Revisorsplikt för senaste räkenskapsperioden beräknas utifrån de två föregående periodernas inskickade årsredovisningar,
+          förutsatt att värden som krävs för beräkning finns i dessa tidigare årsredovisningar.
+          I de fall alla värden inte finns så returneras uppgift_saknas också för senaste räkenskapsperioden.  
+          - ja företaget har revisorsplikt.
+          - nej företaget har inte revisionsplikt.
+          - uppgift_saknas uppgift om revisorsplikt saknas. T.ex. ifall uppgifter saknas från föregående räkenskapsperioder alternativt gäller tidigare inskickad period. 
+        enum:
+          - ja
+          - nej
+          - uppgift_saknas
+    required: ["kravPaRevisionsberattelse","revisorsplikt"]
+  Foretradare:
+    type: object
+    description: Information om en företrädare för en organisation
+    properties:
+      fornamn:
+        type: string
+        maxLength: 50
+        description: Företrädarens förnamn, om det är en fysisk person
+      namn:
+        type: string
+        maxLength: 50
+        description: >-
+          Företrädarens efternamn, om företrädaren är en fysisk person, annars namnet på den juridiska
+          personen.
+      personnummer: 
+        type: string
+        description: Företrädarens personnummer. Tolv siffror, inget bindestreck
+        pattern: '(19|20)[0-9]{10}'
+      annanIdentitet:
+        type: string
+        maxLength: 10
+        description: >-
+          Annan identitet då företrädaren inte identifieras med personnummer,
+          kan vara samordningsnummer, GD-nummer, födelsedatum eller organisationsnummer
+      funktioner: 
+        type: array
+        items: 
+          $ref: '#/definitions/Funktion'
+    required: ["namn"]
+  Funktion:
+    type: object
+    description: Information om en företrädares funktion i en organisation
+    properties:
+      kod:
+        type: string
+        description: Kod som beskriver företrädarens funktion, t.ex. 'VD'
+      text:
+        type: string
+        description: Beskrivning av företrädarens funktion, t.ex. 'Verkställande direktör'
+    required: ["kod", "text"]
+  Arendestatus:
+    type: object
+    properties:
+      orgnr:
+        type: string
+        pattern: '[0-9]{10}'
+        description: Organisationsnummer för organisationen. Tio siffror, inget bindestreck
+      lopnummer:
+        type: integer
+        format: int32
+        minimum: 1
+        description: 'Löpnummer för organisationen. Används endast då det finns flera företagsnamn för ett organisationsnummer, tex för ideella föreningar'
+        example: null
+      namn:
+        type: string
+        maxLength: 200
+        description: Organisationens namn så som det är registrerat i Bolagsverkets register
+        example: Exempel AB
+      hamtat:
+        type: string
+        format: date-time
+        description: Tidpunkt då status kontrollerades, dvs. när svarsmeddelandet skapades
+      tidpunkt:
+        type: string
+        format: date
+        description: Datum då ärendestatusen förändrades
+      typ:
+        type: string
+        description: Händelse som ledde till ändrad status
+        enum:
+          - arsred_inkommen
+          - arsred_registrerad
+          - arsred_avslutad_ej_registrerad
+          - arsred_forelaggande_skickat
+          - arsred_komplettering_inkommen
+          - arsred_saknas
+      arendenummer:
+        type: string
+        pattern: '[0-9]+/[0-9]{4}'
+        description: Ärendenummer för årsredovisningsärendet
+        example: '12345/2024'
+      rakenskapsperiod:
+        type: object
+        description: Räkenskapsperiod som ärendet avser
+        properties:
+          from:
+            type: string
+            format: date
+            example: "2023-01-01"
+          tom:
+            type: string
+            format: date
+            example: "2023-12-31"
+        required: ["from", "tom"]
+    required: ["orgnr", "namn", "hamtat", "typ"]
+
