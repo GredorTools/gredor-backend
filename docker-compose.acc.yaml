@@ -4,3 +4,9 @@ services:
       QUARKUS_PROFILE: "acc"
     ports:
       - "8080:23180"
+    networks:
+      - backend-acc
+
+networks:
+  backend:
+    name: quarkus-backend-acc-network

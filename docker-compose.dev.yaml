@@ -4,3 +4,9 @@ services:
       QUARKUS_PROFILE: "dev"
     ports:
       - "8080:23280"
+    networks:
+      - backend-dev
+
+networks:
+  backend:
+    name: quarkus-backend-dev-network
