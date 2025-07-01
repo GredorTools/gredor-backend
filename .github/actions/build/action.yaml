@@ -1,0 +1,19 @@
+name: Build
+
+description: Sätter upp JDK och Gradle, samt bygger och testar applikationen.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Build and test
+      run: ./gradlew build
+      shell: bash
