@@ -1,6 +1,0 @@
-services:
-  backend:
-    image: ghcr.io/gredortools/gredor-backend:latest
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
