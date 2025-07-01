@@ -6,8 +6,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  PROJECT_NAME: backend
   PROJECT_VERSION: latest
 
 jobs:
@@ -33,22 +31,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN  }}
 
-      - name: Get final image name
+      - name: Get image ref
         run: |
-          IMAGE_NAME_LOWERCASE=${GITHUB_REPOSITORY@L}
-          echo "IMAGE_NAME_LOWERCASE=$IMAGE_NAME_LOWERCASE" >> ${GITHUB_ENV}
+          IMAGE_REF=${REGISTRY}/${GITHUB_REPOSITORY@L}
+          echo "IMAGE_REF=$IMAGE_REF" >> ${GITHUB_ENV}
 
       - name: Push to registry
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }}:${{ env.PROJECT_VERSION }}
+        run: docker push ${{ env.IMAGE_REF }}:${{ env.PROJECT_VERSION }}
 
       - name: Get image digest
         run: |
-          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_NAME_LOWERCASE }}) | cut -d"@" -f2)
+          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_REF }}) | cut -d"@" -f2)
           echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> "$GITHUB_ENV"
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWERCASE }}
+          subject-name: ${{ env.IMAGE_REF }}
           subject-digest: ${{ env.IMAGE_DIGEST }}
           push-to-registry: true
