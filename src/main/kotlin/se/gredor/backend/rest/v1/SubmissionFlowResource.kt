@@ -74,7 +74,6 @@ class SubmissionFlowResource {
                 .pnr(submissionRequest.signerPnr)
                 .orgnr(submissionRequest.companyOrgnr)
         )
-        logger.info(skapaTokenResult.toString())
 
         val handling = Handling()
             .fil(submissionRequest.ixbrl)
@@ -86,7 +85,6 @@ class SubmissionFlowResource {
             KontrolleraAnrop()
                 .handling(handling)
         )
-        logger.info(kontrolleraResult.toString())
 
         return kontrolleraResult
     }
@@ -106,7 +104,6 @@ class SubmissionFlowResource {
                 .pnr(submissionRequest.signerPnr)
                 .orgnr(submissionRequest.companyOrgnr)
         )
-        logger.info(skapaTokenResult.toString())
 
         val handling = Handling()
             .fil(submissionRequest.ixbrl)
@@ -120,7 +117,6 @@ class SubmissionFlowResource {
                 .undertecknare(submissionRequest.signerPnr)
                 .handling(handling)
         )
-        logger.info(inlamningResult.toString())
 
         return inlamningResult
     }
