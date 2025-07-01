@@ -11,7 +11,7 @@ env:
   PROJECT_VERSION: latest
 
 jobs:
-  package:
+  build-and-package:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,7 +43,7 @@ jobs:
 
       - name: Get image digest
         run: |
-          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_REF }}) | cut -d"@" -f2)
+          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_NAME_LOWERCASE }}) | cut -d"@" -f2)
           echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> "$GITHUB_ENV"
 
       - name: Generate artifact attestation
