@@ -2,8 +2,6 @@ services:
   backend:
     environment:
       QUARKUS_PROFILE: "dev"
-    ports:
-      - "8080:23280"
     networks:
       - gredor-dev
 
