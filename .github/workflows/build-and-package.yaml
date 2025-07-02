@@ -50,12 +50,12 @@ jobs:
 
       - name: Get image digest
         run: |
-          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.meta.outputs.tags }}) | cut -d"@" -f2)
+          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_REF }}) | cut -d"@" -f2)
           echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> "$GITHUB_ENV"
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ steps.meta.outputs.tags }}
+          subject-name: ${{ env.IMAGE_REF }}
           subject-digest: ${{ env.IMAGE_DIGEST }}
           push-to-registry: true
