@@ -1,0 +1,12 @@
+# Overrides för enhetstester och komponenttester
+quarkus:
+  http:
+    cors:
+      origins: "*"
+gredor:
+  bolagsverket-api:
+    # Används ej i dessa tester
+    hamta-arsredovisningsinformation:
+      baseurl: "unused"
+    lamna-in-arsredovisning:
+      baseurl: "unused"
