@@ -6,7 +6,7 @@ quarkus:
     cors:
       enabled: true
       methods: GET,POST
-  # Generering av klasser från Bolagsverkts OpenAPI-scheman
+  # Generering av klasser från Bolagsverkets OpenAPI-scheman
   openapi-generator:
     codegen:
       spec:
@@ -29,7 +29,6 @@ quarkus:
     tag: latest
   jib:
     ports: 8080
-
 
 gredor:
   bolagsverket-api:

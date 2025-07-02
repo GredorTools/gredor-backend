@@ -2,7 +2,8 @@
 quarkus:
   http:
     cors:
-      origins: "*"
+      origins: /.*/
+
 gredor:
   bolagsverket-api:
     # Används ej i dessa tester

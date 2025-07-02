@@ -3,6 +3,7 @@ quarkus:
   http:
     cors:
       origins: https://acc.test.gredor.se
+
 gredor:
   bolagsverket-api:
     # Går mot Bolagsverkets acceptanstestmiljö

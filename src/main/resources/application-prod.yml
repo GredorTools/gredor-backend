@@ -3,6 +3,7 @@ quarkus:
   http:
     cors:
       origins: https://gredor.se
+
 gredor:
   bolagsverket-api:
     # Går mot Bolagsverkets produktionsmiljö
