@@ -3,7 +3,6 @@ quarkus:
   http:
     cors:
       enabled: true
-      origins: https://gredor.se
       methods: GET,POST
   # Generering av klasser från Bolagsverkts OpenAPI-scheman
   openapi-generator:
@@ -33,43 +32,8 @@ quarkus:
 gredor:
   bolagsverket-api:
     hamta-arsredovisningsinformation:
-      baseurl: https://api.bolagsverket.se/hamta-arsredovisningsinformation/
       version: v1.4
     lamna-in-arsredovisning:
-      baseurl: https://api.bolagsverket.se/lamna-in-arsredovisning/
       version: v2.1
   rest:
     verify-signer: true
-
-
-# Overrides för utvecklingsprofil
-"%dev":
-  quarkus:
-    http:
-      cors:
-        origins: "*"
-  gredor:
-    bolagsverket-api:
-      # Går mot Bolagsverkets statiska testmiljö
-      hamta-arsredovisningsinformation:
-        baseurl: https://api-accept2.bolagsverket.se/testapi/hamta-arsredovisningsinformation/
-      lamna-in-arsredovisning:
-        baseurl: https://api-accept2.bolagsverket.se/testapi/lamna-in-arsredovisning/
-    rest:
-      # Avaktivera verifiering av signatur - funkar inte pga att vi får statiskt data från Bolagsverket
-      verify-signer: false
-
-
-# Overrides för acceptanstestprofil
-"%acc":
-  quarkus:
-    http:
-      cors:
-        origins: https://acc.test.gredor.se
-  gredor:
-    bolagsverket-api:
-      # Går mot Bolagsverkets acceptanstestmiljö
-      hamta-arsredovisningsinformation:
-        baseurl: https://api-accept2.bolagsverket.se/hamta-arsredovisningsinformation/
-      lamna-in-arsredovisning:
-        baseurl: https://api-accept2.bolagsverket.se/lamna-in-arsredovisning/

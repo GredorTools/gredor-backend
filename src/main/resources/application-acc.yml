@@ -1,0 +1,12 @@
+# Overrides för acceptanstestmiljö
+quarkus:
+  http:
+    cors:
+      origins: https://acc.test.gredor.se
+gredor:
+  bolagsverket-api:
+    # Går mot Bolagsverkets acceptanstestmiljö
+    hamta-arsredovisningsinformation:
+      baseurl: https://api-accept2.bolagsverket.se/hamta-arsredovisningsinformation/
+    lamna-in-arsredovisning:
+      baseurl: https://api-accept2.bolagsverket.se/lamna-in-arsredovisning/

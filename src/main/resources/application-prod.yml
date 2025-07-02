@@ -1,0 +1,12 @@
+# Overrides för produktionsmiljö
+quarkus:
+  http:
+    cors:
+      origins: https://gredor.se
+gredor:
+  bolagsverket-api:
+    # Går mot Bolagsverkets produktionsmiljö
+    hamta-arsredovisningsinformation:
+      baseurl: https://api.bolagsverket.se/hamta-arsredovisningsinformation/
+    lamna-in-arsredovisning:
+      baseurl: https://api.bolagsverket.se/lamna-in-arsredovisning/
