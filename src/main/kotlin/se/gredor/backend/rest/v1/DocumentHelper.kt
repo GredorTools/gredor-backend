@@ -7,6 +7,7 @@ import jakarta.inject.Inject
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.bouncycastle.cert.X509CertificateHolder
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
+import org.bouncycastle.cms.CMSException
 import org.bouncycastle.cms.CMSProcessableByteArray
 import org.bouncycastle.cms.CMSSignedData
 import org.bouncycastle.cms.SignerInformation
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory
 import se.gredor.backend.config.BolagsverketApiConfig
 import se.gredor.backend.model.tellustalk.Signature
 import java.io.BufferedInputStream
+import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.cert.CertificateFactory
@@ -40,8 +42,8 @@ class DocumentHelper {
     fun verifyDocument(
         doc: PDDocument,
         pdfByte: ByteArray
-    ): Pair<Boolean, Boolean> {
-        var isDocumentSignatureValid = false
+    ): VerifyDocumentResult {
+        var isSignatureValid = false
         var isCertificateTrusted = false
 
         try {
@@ -59,7 +61,7 @@ class DocumentHelper {
                     .iterator()
                     .next()
                 val verifier = JcaSimpleSignerInfoVerifierBuilder().setProvider(BouncyCastleProvider()).build(cert)
-                isDocumentSignatureValid = signerInfo.verify(verifier)
+                isSignatureValid = signerInfo.verify(verifier)
 
                 // Skapa TrustStore med rotcertifikatet
                 val trustStore = KeyStore.getInstance(KeyStore.getDefaultType())
@@ -88,12 +90,16 @@ class DocumentHelper {
                 }
                 isCertificateTrusted = validationResultPerCert.size > 1 && validationResultPerCert.all { it }
             }
-        } catch (e: Exception) {
-            logger.error(e.message)
-            logger.error(e.stackTraceToString())
+        } catch (_: GeneralSecurityException) {
+            // Dokumentet klarade inte verifiering
+        } catch (_: CMSException) {
+            // Dokumentet klarade inte verifiering
         }
 
-        return Pair(isDocumentSignatureValid, isCertificateTrusted)
+        return VerifyDocumentResult(
+            isSignatureValid = isSignatureValid,
+            isCertificateTrusted = isCertificateTrusted
+        )
     }
 
     fun documentHasValidSigner(doc: PDDocument, signerPnr: String, companyOrgnr: String): Boolean {
@@ -131,7 +137,7 @@ class DocumentHelper {
         return null
     }
 
-    @Throws(java.lang.Exception::class)
+    @Throws(GeneralSecurityException::class)
     fun getRootCertificate(endEntityCertificate: X509Certificate?, trustStore: KeyStore?): X509Certificate? {
         val issuerCertificate = findIssuerCertificate(endEntityCertificate!!, trustStore!!)
         if (issuerCertificate != null) {
@@ -144,12 +150,14 @@ class DocumentHelper {
         return null
     }
 
+    @Throws(GeneralSecurityException::class)
     private fun isRoot(certificate: X509Certificate): Boolean {
-        try {
-            certificate.verify(certificate.publicKey)
-            return certificate.keyUsage != null && certificate.keyUsage[5]
-        } catch (_: java.lang.Exception) {
-            return false
-        }
+        certificate.verify(certificate.publicKey)
+        return certificate.keyUsage != null && certificate.keyUsage[5]
     }
+
+    data class VerifyDocumentResult(
+        val isSignatureValid: Boolean,
+        val isCertificateTrusted: Boolean
+    )
 }

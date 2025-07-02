@@ -2,10 +2,7 @@ package se.gredor.backend.rest.v1
 
 import jakarta.inject.Inject
 import jakarta.validation.Valid
-import jakarta.ws.rs.Consumes
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.Produces
+import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import org.apache.pdfbox.Loader
 import org.eclipse.microprofile.rest.client.inject.RestClient
@@ -46,8 +43,8 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun prepare(@Valid preparationRequest: PreparationRequest): SkapaTokenOK {
-        if (!verifySigner(preparationRequest)) {
-            throw Exception("Invalid signer or document")
+        if (!verifyDocumentAndSigner(preparationRequest)) {
+            throw BadRequestException("Invalid signer or document")
         }
 
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
@@ -64,8 +61,8 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun validate(@Valid submissionRequest: SubmissionRequest): KontrolleraSvar {
-        if (!verifySigner(submissionRequest)) {
-            throw Exception("Invalid signer or document")
+        if (!verifyDocumentAndSigner(submissionRequest)) {
+            throw BadRequestException("Invalid signer or document")
         }
 
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
@@ -94,8 +91,8 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun submit(@Valid submissionRequest: SubmissionRequest): InlamningOK {
-        if (!verifySigner(submissionRequest)) {
-            throw Exception("Invalid signer or document")
+        if (!verifyDocumentAndSigner(submissionRequest)) {
+            throw BadRequestException("Invalid signer or document")
         }
 
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
@@ -124,26 +121,37 @@ class SubmissionFlowResource {
     private fun getBolagsverketApiUrl(): String =
         "${bolagsverketApiConfig.lamnaInArsredovisningBaseurl()}/${bolagsverketApiConfig.lamnaInArsredovisningVersion()}"
 
-    private fun verifySigner(authenticatableRequest: AuthenticatableRequest): Boolean {
-        if (!restConfig.verifySigner()) {
-            logger.warn("Signer verification is disabled")
-            return true
-        }
-
+    private fun verifyDocumentAndSigner(authenticatableRequest: AuthenticatableRequest): Boolean {
         val pdfByte = authenticatableRequest.signedPdf
         Loader.loadPDF(pdfByte).use { doc ->
-            val (isDocumentSignatureValid, isCertificateTrusted) = documentHelper.verifyDocument(doc, pdfByte)
-            if (!isDocumentSignatureValid || !isCertificateTrusted) {
+            val verifyDocumentResult = documentHelper.verifyDocument(doc, pdfByte)
+            if (!verifyDocumentResult.isSignatureValid) {
+                logger.info("Dokumentet har inte en giltig signatur")
+                return false
+            }
+            if (!verifyDocumentResult.isCertificateTrusted) {
+                logger.info("Dokumentet är inte signerat med ett betrott certifikat")
                 return false
             }
 
-            val hasValidSigner =
-                documentHelper.documentHasValidSigner(
-                    doc,
-                    authenticatableRequest.signerPnr,
-                    authenticatableRequest.companyOrgnr
+            if (restConfig.verifySigner()) {
+                val hasValidSigner =
+                    documentHelper.documentHasValidSigner(
+                        doc,
+                        authenticatableRequest.signerPnr,
+                        authenticatableRequest.companyOrgnr
+                    )
+                if (!hasValidSigner) {
+                    return false
+                }
+            } else {
+                logger.warn(
+                    "Ingen verifiering kommer att göras för kontrollera att det är en behörig person som har signerat: " +
+                            "verifieringen är avaktiverad"
                 )
-            return hasValidSigner
+            }
+
+            return true
         }
     }
 }
