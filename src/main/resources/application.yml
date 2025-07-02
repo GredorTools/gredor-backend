@@ -24,6 +24,7 @@ quarkus:
     registry: ghcr.io
     group: gredortools
     name: gredor-backend
+    tag: latest
   jib:
     ports: 8080
 
