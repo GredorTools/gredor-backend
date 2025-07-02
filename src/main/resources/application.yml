@@ -1,4 +1,6 @@
 quarkus:
+  management:
+    enabled: true
   # HTTP-serverinställningar
   http:
     cors:
