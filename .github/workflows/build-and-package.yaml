@@ -6,7 +6,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  PROJECT_VERSION: latest
 
 jobs:
   build-and-package:
@@ -36,17 +35,26 @@ jobs:
           IMAGE_REF=${REGISTRY}/${GITHUB_REPOSITORY@L}
           echo "IMAGE_REF=$IMAGE_REF" >> ${GITHUB_ENV}
 
+      - name: Get Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_REF }}
+
+      - name: Tag image
+        run: docker tag ${{ env.IMAGE_REF }} ${{ steps.meta.outputs.tags }}
+
       - name: Push to registry
-        run: docker push ${{ env.IMAGE_REF }}:${{ env.PROJECT_VERSION }}
+        run: docker push ${{ steps.meta.outputs.tags }}
 
       - name: Get image digest
         run: |
-          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.IMAGE_REF }}) | cut -d"@" -f2)
+          IMAGE_DIGEST=$(echo $(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.meta.outputs.tags }}) | cut -d"@" -f2)
           echo "IMAGE_DIGEST=$IMAGE_DIGEST" >> "$GITHUB_ENV"
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.IMAGE_REF }}
+          subject-name: ${{ steps.meta.outputs.tags }}
           subject-digest: ${{ env.IMAGE_DIGEST }}
           push-to-registry: true
