@@ -24,6 +24,7 @@ import java.io.BufferedInputStream
 import java.security.GeneralSecurityException
 import java.security.KeyStore
 import java.security.KeyStoreException
+import java.security.SignatureException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.util.*
@@ -66,7 +67,7 @@ class DocumentHelper {
                 // Skapa TrustStore med rotcertifikatet
                 val trustStore = KeyStore.getInstance(KeyStore.getDefaultType())
                 trustStore.load(null)
-                val fis = object {}.javaClass.getResourceAsStream("certs/I_CA_Root.cer")
+                val fis = object {}.javaClass.classLoader.getResourceAsStream("certs/I_CA_Root.cer")
                 if (fis == null) {
                     throw Exception("Could not load certificates")
                 }
@@ -152,8 +153,12 @@ class DocumentHelper {
 
     @Throws(GeneralSecurityException::class)
     private fun isRoot(certificate: X509Certificate): Boolean {
-        certificate.verify(certificate.publicKey)
-        return certificate.keyUsage != null && certificate.keyUsage[5]
+        try {
+            certificate.verify(certificate.publicKey)
+            return certificate.keyUsage != null && certificate.keyUsage[5]
+        } catch (_: SignatureException) {
+            return false
+        }
     }
 
     data class VerifyDocumentResult(
