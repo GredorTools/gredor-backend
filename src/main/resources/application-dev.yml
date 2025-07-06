@@ -12,5 +12,5 @@ gredor:
     lamna-in-arsredovisning:
       baseurl: https://api-accept2.bolagsverket.se/testapi/lamna-in-arsredovisning/
   rest:
-    # Avaktivera verifiering av signatur - funkar inte pga att vi får statiskt data från Bolagsverket
+    # Avaktivera verifiering av undertecknare - funkar inte pga att vi får statiskt testdata från Bolagsverket
     verify-signer: false

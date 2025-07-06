@@ -16,6 +16,7 @@ import se.gredor.backend.config.RestConfig
 import se.gredor.backend.model.gredor.AuthenticatableRequest
 import se.gredor.backend.model.gredor.PreparationRequest
 import se.gredor.backend.model.gredor.SubmissionRequest
+import se.gredor.backend.model.gredor.ValidationRequest
 
 @Path("/v1/submission-flow/")
 class SubmissionFlowResource {
@@ -60,20 +61,20 @@ class SubmissionFlowResource {
     @Path("validate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun validate(@Valid submissionRequest: SubmissionRequest): KontrolleraSvar {
-        if (!verifyDocumentAndSigner(submissionRequest)) {
+    fun validate(@Valid validationRequest: ValidationRequest): KontrolleraSvar {
+        if (!verifyDocumentAndSigner(validationRequest)) {
             throw BadRequestException("Invalid signer or document")
         }
 
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
             getBolagsverketApiUrl(),
             SkapaInlamningTokenAnrop()
-                .pnr(submissionRequest.signerPnr)
-                .orgnr(submissionRequest.companyOrgnr)
+                .pnr(validationRequest.signerPnr)
+                .orgnr(validationRequest.companyOrgnr)
         )
 
         val handling = Handling()
-            .fil(submissionRequest.ixbrl)
+            .fil(validationRequest.ixbrl)
             .typ(Handling.TypEnum.ARSREDOVISNING_KOMPLETT)
 
         val kontrolleraResult = kontrollApi.kontrollera(
@@ -106,13 +107,14 @@ class SubmissionFlowResource {
             .fil(submissionRequest.ixbrl)
             .typ(Handling.TypEnum.ARSREDOVISNING_KOMPLETT)
 
-        // TODO: E-postadresser
         val inlamningResult = inlamningApi.inlamning(
             getBolagsverketApiUrl(),
             skapaTokenResult.token,
             InlamningAnrop()
                 .undertecknare(submissionRequest.signerPnr)
                 .handling(handling)
+                .addEpostadresserItem(submissionRequest.notificationEmail)
+                .addKvittensepostadresserItem(submissionRequest.notificationEmail)
         )
 
         return inlamningResult

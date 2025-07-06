@@ -2,11 +2,10 @@ package se.gredor.backend.model.gredor
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import dev.drewhamilton.poko.Poko
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.Pattern
 
 @Poko
-class SubmissionRequest(
+class ValidationRequest(
 
     @JsonProperty("companyOrgnr")
     @Pattern(regexp = "^\\d{10}$")
@@ -22,10 +21,6 @@ class SubmissionRequest(
 
     @JsonProperty("ixbrl")
     @Poko.ReadArrayContent
-    val ixbrl: ByteArray,
-
-    @JsonProperty("notificationEmail")
-    @Email
-    val notificationEmail: String
+    val ixbrl: ByteArray
 
 ) : AuthenticatableRequest
