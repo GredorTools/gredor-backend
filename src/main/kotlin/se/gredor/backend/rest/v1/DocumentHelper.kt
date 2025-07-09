@@ -69,7 +69,7 @@ class DocumentHelper {
                 trustStore.load(null)
                 val fis = object {}.javaClass.classLoader.getResourceAsStream("certs/I_CA_Root.cer")
                 if (fis == null) {
-                    throw Exception("Could not load certificates")
+                    throw Exception("Could not load trusted certificate")
                 }
                 val bis = BufferedInputStream(fis)
                 val cf = CertificateFactory.getInstance("X.509")
@@ -140,7 +140,11 @@ class DocumentHelper {
 
     @Throws(GeneralSecurityException::class)
     fun getRootCertificate(endEntityCertificate: X509Certificate?, trustStore: KeyStore?): X509Certificate? {
-        val issuerCertificate = findIssuerCertificate(endEntityCertificate!!, trustStore!!)
+        if (endEntityCertificate == null || trustStore == null) {
+            return null
+        }
+
+        val issuerCertificate = findIssuerCertificate(endEntityCertificate, trustStore)
         if (issuerCertificate != null) {
             return if (isRoot(issuerCertificate)) {
                 issuerCertificate
