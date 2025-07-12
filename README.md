@@ -1,4 +1,4 @@
-# gredor-backend
+![Gredor backend](./assets/banner.png)
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
