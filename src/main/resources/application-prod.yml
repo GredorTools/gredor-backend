@@ -5,7 +5,15 @@ quarkus:
       origins: https://gredor.se
 
 gredor:
-  bolagsverket-api:
+  auth:
+    limit:
+      per-interval: 2000
+      per-interval-and-person: 10
+      interval-in-hours: 168
+  bankid:
+    # Går mot BankID:s produktionsmiljö
+    test-mode: false
+  bolagsverket:
     # Går mot Bolagsverkets produktionsmiljö
     hamta-arsredovisningsinformation:
       baseurl: https://api.bolagsverket.se/hamta-arsredovisningsinformation/

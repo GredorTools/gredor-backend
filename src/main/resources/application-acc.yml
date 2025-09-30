@@ -5,7 +5,15 @@ quarkus:
       origins: https://acc.test.gredor.se
 
 gredor:
-  bolagsverket-api:
+  auth:
+    limit:
+      per-interval: 200
+      per-interval-and-person: 10
+      interval-in-hours: 168
+  bankid:
+    # Går mot BankID:s testmiljö
+    test-mode: true
+  bolagsverket:
     # Går mot Bolagsverkets acceptanstestmiljö
     hamta-arsredovisningsinformation:
       baseurl: https://api-accept2.bolagsverket.se/hamta-arsredovisningsinformation/

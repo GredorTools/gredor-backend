@@ -5,9 +5,17 @@ quarkus:
       origins: /.*/
 
 gredor:
-  bolagsverket-api:
+  auth:
+    limit:
+      per-interval: 10
+      per-interval-and-person: 3
+      interval-in-hours: 168
+  bankid:
+    # Används ej i dessa tester
+    test-mode: true
+  bolagsverket:
     # Används ej i dessa tester
     hamta-arsredovisningsinformation:
-      baseurl: "unused"
+      baseurl: unused
     lamna-in-arsredovisning:
-      baseurl: "unused"
+      baseurl: unused

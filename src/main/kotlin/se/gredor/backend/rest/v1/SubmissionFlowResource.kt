@@ -1,35 +1,31 @@
 package se.gredor.backend.rest.v1
 
+import AuthenticationRequired
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
-import org.apache.pdfbox.Loader
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.api.InlamningApi
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.api.KontrollApi
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import se.gredor.backend.config.BolagsverketApiConfig
-import se.gredor.backend.config.RestConfig
-import se.gredor.backend.model.gredor.AuthenticatableRequest
-import se.gredor.backend.model.gredor.PreparationRequest
-import se.gredor.backend.model.gredor.SubmissionRequest
-import se.gredor.backend.model.gredor.ValidationRequest
+import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
+import se.gredor.backend.config.BolagsverketConfig
+import se.gredor.backend.rest.v1.model.gredor.PreparationRequest
+import se.gredor.backend.rest.v1.model.gredor.PreparationResponse
+import se.gredor.backend.rest.v1.model.gredor.SubmissionRequest
+import se.gredor.backend.rest.v1.model.gredor.ValidationRequest
+import java.util.*
 
 @Path("/v1/submission-flow/")
+@AuthenticationRequired
 class SubmissionFlowResource {
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     @Inject
-    private lateinit var documentHelper: DocumentHelper
-
-    @Inject
-    private lateinit var bolagsverketApiConfig: BolagsverketApiConfig
-
-    @Inject
-    private lateinit var restConfig: RestConfig
+    private lateinit var bolagsverketConfig: BolagsverketConfig
 
     @Inject
     @RestClient
@@ -43,34 +39,35 @@ class SubmissionFlowResource {
     @Path("prepare")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun prepare(@Valid preparationRequest: PreparationRequest): SkapaTokenOK {
-        if (!verifyDocumentAndSigner(preparationRequest)) {
-            throw BadRequestException("Invalid signer or document")
-        }
-
+    fun prepare(
+        @Valid preparationRequest: PreparationRequest,
+        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+    ): PreparationResponse {
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
             getBolagsverketApiUrl(),
             SkapaInlamningTokenAnrop()
-                .pnr(preparationRequest.signerPnr)
-                .orgnr(preparationRequest.companyOrgnr)
+                .pnr(personalNumber)
+                .orgnr(preparationRequest.foretagOrgnr)
         )
-        return skapaTokenResult
+        return PreparationResponse(
+            avtalstext = skapaTokenResult.avtalstext,
+            avtalstextAndrad = skapaTokenResult.avtalstextAndrad
+        )
     }
 
     @POST
     @Path("validate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun validate(@Valid validationRequest: ValidationRequest): KontrolleraSvar {
-        if (!verifyDocumentAndSigner(validationRequest)) {
-            throw BadRequestException("Invalid signer or document")
-        }
-
+    fun validate(
+        @Valid validationRequest: ValidationRequest,
+        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+    ): KontrolleraSvar {
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
             getBolagsverketApiUrl(),
             SkapaInlamningTokenAnrop()
-                .pnr(validationRequest.signerPnr)
-                .orgnr(validationRequest.companyOrgnr)
+                .pnr(personalNumber)
+                .orgnr(validationRequest.foretagOrgnr)
         )
 
         val handling = Handling()
@@ -91,16 +88,15 @@ class SubmissionFlowResource {
     @Path("submit")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun submit(@Valid submissionRequest: SubmissionRequest): InlamningOK {
-        if (!verifyDocumentAndSigner(submissionRequest)) {
-            throw BadRequestException("Invalid signer or document")
-        }
-
+    fun submit(
+        @Valid submissionRequest: SubmissionRequest,
+        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+    ): InlamningOK {
         val skapaTokenResult = inlamningApi.skapaInlamningtoken(
             getBolagsverketApiUrl(),
             SkapaInlamningTokenAnrop()
-                .pnr(submissionRequest.signerPnr)
-                .orgnr(submissionRequest.companyOrgnr)
+                .pnr(personalNumber)
+                .orgnr(submissionRequest.foretagOrgnr)
         )
 
         val handling = Handling()
@@ -111,49 +107,28 @@ class SubmissionFlowResource {
             getBolagsverketApiUrl(),
             skapaTokenResult.token,
             InlamningAnrop()
-                .undertecknare(submissionRequest.signerPnr)
+                .undertecknare(personalNumber)
                 .handling(handling)
-                .addEpostadresserItem(submissionRequest.notificationEmail)
-                .addKvittensepostadresserItem(submissionRequest.notificationEmail)
+                .addEpostadresserItem(submissionRequest.aviseringEpost)
+                .addKvittensepostadresserItem(submissionRequest.aviseringEpost)
         )
+
+        try {
+            val checksum = Base64.getEncoder().encode(
+                inlamningResult?.handlingsinfo?.sha256checksumma
+            )
+            logger.info("Inlamning OK, checksum: $checksum")
+        } catch (e: Exception) {
+            logger.warn("Inlamning OK, but could not retrieve checksum.")
+        }
 
         return inlamningResult
     }
 
-    private fun getBolagsverketApiUrl(): String =
-        "${bolagsverketApiConfig.lamnaInArsredovisningBaseurl()}/${bolagsverketApiConfig.lamnaInArsredovisningVersion()}"
+    private fun getBolagsverketApiUrl(): String {
+        val lamnaInArsredovisningApi = bolagsverketConfig.lamnaInArsredovisning()
+            ?: throw IllegalStateException("API Lämna in årsredovisning not configured.")
 
-    private fun verifyDocumentAndSigner(authenticatableRequest: AuthenticatableRequest): Boolean {
-        val pdfByte = authenticatableRequest.signedPdf
-        Loader.loadPDF(pdfByte).use { doc ->
-            val verifyDocumentResult = documentHelper.verifyDocument(doc, pdfByte)
-            if (!verifyDocumentResult.isSignatureValid) {
-                logger.info("Dokumentet har inte en giltig signatur")
-                return false
-            }
-            if (!verifyDocumentResult.isCertificateTrusted) {
-                logger.info("Dokumentet är inte signerat med ett betrott certifikat")
-                return false
-            }
-
-            if (restConfig.verifySigner()) {
-                val hasValidSigner =
-                    documentHelper.documentHasValidSigner(
-                        doc,
-                        authenticatableRequest.signerPnr,
-                        authenticatableRequest.companyOrgnr
-                    )
-                if (!hasValidSigner) {
-                    return false
-                }
-            } else {
-                logger.warn(
-                    "Ingen verifiering kommer att göras för kontrollera att det är en behörig person som har signerat: " +
-                            "verifieringen är avaktiverad"
-                )
-            }
-
-            return true
-        }
+        return "${lamnaInArsredovisningApi.baseurl()}/${lamnaInArsredovisningApi.version()}"
     }
 }

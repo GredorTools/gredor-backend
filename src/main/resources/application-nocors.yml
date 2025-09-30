@@ -1,0 +1,4 @@
+quarkus:
+  http:
+    cors:
+      origins: /.*/

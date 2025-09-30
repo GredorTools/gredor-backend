@@ -5,12 +5,17 @@ quarkus:
       origins: /.*/
 
 gredor:
-  bolagsverket-api:
+  auth:
+    limit:
+      per-interval: 200
+      per-interval-and-person: 10
+      interval-in-hours: 168
+  bankid:
+    # BankID är mockat i utvecklingsmiljön
+    test-mode: true
+  bolagsverket:
     # Går mot Bolagsverkets statiska testmiljö
     hamta-arsredovisningsinformation:
       baseurl: https://api-accept2.bolagsverket.se/testapi/hamta-arsredovisningsinformation/
     lamna-in-arsredovisning:
       baseurl: https://api-accept2.bolagsverket.se/testapi/lamna-in-arsredovisning/
-  rest:
-    # Avaktivera verifiering av undertecknare - funkar inte pga att vi får statiskt testdata från Bolagsverket
-    verify-signer: false
