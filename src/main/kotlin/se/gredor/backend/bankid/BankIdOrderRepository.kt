@@ -16,5 +16,5 @@ class BankIdOrderRepository : PanacheRepository<BankIdOrderEntity> {
     fun deleteByOrderRef(orderRef: String) =
         delete("orderRef = ?1", orderRef)
 
-    fun deleteOldOrders(maxAge: Duration) = delete("orderTime < ?1", Instant.now().minus(maxAge))
+    fun deleteOldOrders(maxAge: Duration) = delete("orderTime < ?1", Instant.now().minus(maxAge).toEpochMilli())
 }
