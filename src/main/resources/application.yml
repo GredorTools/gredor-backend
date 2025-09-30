@@ -1,37 +1,23 @@
 quarkus:
   management:
     enabled: true
-  # Ladda in konfiguration med secrets
-  config:
-    locations: file:${GREDOR_SECRETS_CONFIG_PATH}  # Ska vara en yaml-fil
-  # Databas
-  datasource:
-    db-kind: sqlite
-    jdbc:
-      url: jdbc:sqlite:${GREDOR_DATABASE_PATH}?busy_timeout=10000
-      max-size: 1  # Viktigt med SQLite att inte ha flera anslutningar samtidigt
-  flyway:
-    migrate-at-start: true
-  hibernate-orm:
-    schema-management:
-      strategy: validate
   # HTTP-serverinställningar
   http:
     cors:
       enabled: true
       methods: GET,POST
-  # Autentisering mot andra API:er
-  tls:
-    bolagsverket:
-      key-store:
-        p12:
-          path: ${gredor.secrets.cert-bolagsverket.path}  # Ska vara en PKCS#12-fil
-          password: ${gredor.secrets.cert-bolagsverket.password}
-  rest-client:
-    hamtaArsredovisningsinformation_1_4_yaml:
-      tls-configuration-name: bolagsverket
-    lamnaInArsredovisning_2_1_yaml:
-      tls-configuration-name: bolagsverket
+  # Databas
+  datasource:
+    db-kind: sqlite
+    jdbc:
+      max-size: 1  # Viktigt med SQLite att inte ha flera anslutningar samtidigt
+    devservices:
+      enabled: false  # Funkar inte med SQLite
+  flyway:
+    migrate-at-start: true
+  hibernate-orm:
+    schema-management:
+      strategy: validate
   # Generering av klasser från Bolagsverkets OpenAPI-scheman
   openapi-generator:
     codegen:

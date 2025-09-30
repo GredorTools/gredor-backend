@@ -1,5 +1,8 @@
 # Overrides för utvecklingsmiljö
 quarkus:
+  config:
+    profile:
+      parent: server
   http:
     cors:
       origins: /.*/

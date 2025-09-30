@@ -1,5 +1,8 @@
 # Overrides för acceptanstestmiljö
 quarkus:
+  config:
+    profile:
+      parent: server
   http:
     cors:
       origins: https://acc.test.gredor.se

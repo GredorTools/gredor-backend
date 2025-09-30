@@ -3,6 +3,14 @@ quarkus:
   http:
     cors:
       origins: /.*/
+  datasource:
+    jdbc:
+      url: "jdbc:sqlite::memory:"
+  tls:
+    # Används ej i dessa tester
+    bolagsverket:
+      key-store:
+        p12: null
 
 gredor:
   auth:
@@ -19,3 +27,11 @@ gredor:
       baseurl: unused
     lamna-in-arsredovisning:
       baseurl: unused
+  secrets:
+    # Används ej i dessa tester
+    cert-bankid:
+      path: unused
+      password: unused
+    cert-bolagsverket:
+      path: unused
+      password: unused
