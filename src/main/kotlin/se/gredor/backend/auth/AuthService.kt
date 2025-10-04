@@ -39,7 +39,13 @@ class AuthService {
 
     @Transactional
     fun verifyToken(personalNumber: String, token: String): Boolean {
-        authRespository.findByPersonalNumberAndToken(personalNumber, token) ?: throw UnauthorizedException()
+        val authEntity =
+            authRespository.findByPersonalNumberAndToken(personalNumber, token) ?: throw UnauthorizedException()
+
+        if (authEntity.expiresAt < Instant.now().toEpochMilli()) {
+            throw UnauthorizedException()
+        }
+
         return true
     }
 

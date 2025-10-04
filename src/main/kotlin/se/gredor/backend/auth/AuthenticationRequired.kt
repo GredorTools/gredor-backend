@@ -1,3 +1,5 @@
+package se.gredor.backend.auth
+
 import jakarta.ws.rs.NameBinding
 
 @NameBinding

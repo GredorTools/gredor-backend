@@ -15,7 +15,6 @@ import se.swedenconnect.security.credential.KeyStoreCredential
 import java.io.FileInputStream
 import java.security.KeyStore
 
-
 class BankIdClientProducer {
     @Inject
     private lateinit var bankIdConfig: BankIdConfig
@@ -34,33 +33,29 @@ class BankIdClientProducer {
 
     @Bean
     fun bankIdWebClientFactory(): WebClient {
-        try {
-            val keyStore = KeyStore.getInstance("PKCS12")
-            FileInputStream(this.bankIdConfig.certPath()).use { keyStoreData ->
-                keyStore.load(
-                    keyStoreData,
-                    this.bankIdConfig.certPassword().toCharArray()
-                )
-            }
-            val credential = KeyStoreCredential(
-                keyStore, "1", this.bankIdConfig.certPassword().toCharArray(), null
+        val keyStore = KeyStore.getInstance("PKCS12")
+        FileInputStream(this.bankIdConfig.certPath()).use { keyStoreData ->
+            keyStore.load(
+                keyStoreData,
+                this.bankIdConfig.certPassword().toCharArray()
             )
-
-            var webServiceUrl: String
-            var trusedRoot: Resource
-            if (bankIdConfig.testMode()) {
-                webServiceUrl = WebClientFactoryBean.TEST_WEB_SERVICE_URL
-                trusedRoot = WebClientFactoryBean.TEST_ROOT_CERTIFICATE.get()
-            } else {
-                webServiceUrl = WebClientFactoryBean.PRODUCTION_WEB_SERVICE_URL
-                trusedRoot = WebClientFactoryBean.PRODUCTION_ROOT_CERTIFICATE.get()
-            }
-
-            val webClientFactory = WebClientFactoryBean(webServiceUrl, trusedRoot, credential)
-            webClientFactory.afterPropertiesSet()
-            return webClientFactory.createInstance()
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to create bean for webclient supplier ", e)
         }
+        val credential = KeyStoreCredential(
+            keyStore, "1", this.bankIdConfig.certPassword().toCharArray(), null
+        )
+
+        var webServiceUrl: String
+        var trusedRoot: Resource
+        if (bankIdConfig.testMode()) {
+            webServiceUrl = WebClientFactoryBean.TEST_WEB_SERVICE_URL
+            trusedRoot = WebClientFactoryBean.TEST_ROOT_CERTIFICATE.get()
+        } else {
+            webServiceUrl = WebClientFactoryBean.PRODUCTION_WEB_SERVICE_URL
+            trusedRoot = WebClientFactoryBean.PRODUCTION_ROOT_CERTIFICATE.get()
+        }
+
+        val webClientFactory = WebClientFactoryBean(webServiceUrl, trusedRoot, credential)
+        webClientFactory.afterPropertiesSet()
+        return webClientFactory.createInstance()
     }
 }

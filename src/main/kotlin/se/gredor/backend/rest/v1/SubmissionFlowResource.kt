@@ -1,6 +1,5 @@
 package se.gredor.backend.rest.v1
 
-import AuthenticationRequired
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.ws.rs.*
@@ -13,6 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.config.BolagsverketConfig
+import se.gredor.backend.auth.AuthenticationRequired
 import se.gredor.backend.rest.v1.model.gredor.PreparationRequest
 import se.gredor.backend.rest.v1.model.gredor.PreparationResponse
 import se.gredor.backend.rest.v1.model.gredor.SubmissionRequest

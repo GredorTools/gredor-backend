@@ -1,12 +1,12 @@
 package se.gredor.backend.auth
 
-import AuthenticationRequired
 import io.quarkus.security.UnauthorizedException
 import jakarta.annotation.Priority
 import jakarta.inject.Inject
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
+import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.ext.Provider
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
@@ -47,6 +47,7 @@ class AuthFilter : ContainerRequestFilter {
         requestContext.abortWith(
             Response.status(Response.Status.UNAUTHORIZED)
                 .entity(mapOf("error" to message))
+                .type(MediaType.APPLICATION_JSON)
                 .build()
         )
     }
