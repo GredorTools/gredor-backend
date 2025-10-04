@@ -6,11 +6,6 @@ quarkus:
   datasource:
     jdbc:
       url: "jdbc:sqlite::memory:"
-  tls:
-    # Används ej i dessa tester
-    bolagsverket:
-      key-store:
-        p12: null
 
 gredor:
   auth:
@@ -27,6 +22,8 @@ gredor:
       baseurl: unused
     lamna-in-arsredovisning:
       baseurl: unused
+  rest:
+    use-x-real-ip: false
   secrets:
     # Används ej i dessa tester
     cert-bankid:

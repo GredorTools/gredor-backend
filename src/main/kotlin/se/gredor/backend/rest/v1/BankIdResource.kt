@@ -17,9 +17,11 @@ import se.gredor.backend.bankid.AuthStatus
 import se.gredor.backend.bankid.BankIdService
 import se.gredor.backend.bankid.BankIdStatusResponse
 import se.gredor.backend.bankid.StatusCompleteData
+import se.gredor.backend.config.RestConfig
 import se.gredor.backend.rest.v1.model.bankid.AuthInitRequest
 import se.gredor.backend.rest.v1.model.bankid.AuthStatusRequest
 import se.gredor.backend.rest.v1.model.bankid.CancelRequest
+import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
 @Path("/v1/bankid")
 class BankIdResource {
@@ -28,6 +30,9 @@ class BankIdResource {
 
     @Inject
     private lateinit var bankIdService: BankIdService
+
+    @Inject
+    private lateinit var restConfig: RestConfig
 
     @POST
     @Path("/init")
@@ -64,14 +69,7 @@ class BankIdResource {
             }
 
             // Skicka förfrågan till BankID
-            var endUserIp = context.request().getHeader("X-Real-IP")
-                ?: context.request().authority().host()
-
-            if (endUserIp == "localhost") {
-                endUserIp = "127.0.0.1" // Vid lokalt test
-            }
-
-            val response = bankIdService.authInit(request.personalNumber, endUserIp)
+            val response = bankIdService.authInit(request.personalNumber, resolveEndUserIp(context, restConfig))
             updateCookies(response, context)
 
             return response

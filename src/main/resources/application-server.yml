@@ -18,3 +18,7 @@ quarkus:
       tls-configuration-name: bolagsverket
     lamnaInArsredovisning_2_1_yaml:
       tls-configuration-name: bolagsverket
+
+gredor:
+  rest:
+    use-x-real-ip: ${GREDOR_USE_X_REAL_IP}
