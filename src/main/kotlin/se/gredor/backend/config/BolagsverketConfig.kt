@@ -2,15 +2,22 @@ package se.gredor.backend.config
 
 import io.smallrye.config.ConfigMapping
 import io.smallrye.config.WithName
-import se.gredor.backend.config.definitions.BolagsverketApiDefinition
 
 @ConfigMapping(prefix = "gredor.bolagsverket")
 interface BolagsverketConfig {
 
     @WithName("hamta-arsredovisningsinformation")
-    fun hamtaArsredovisningsinformation(): BolagsverketApiDefinition?
+    fun hamtaArsredovisningsinformation(): ApiDefinition?
 
     @WithName("lamna-in-arsredovisning")
-    fun lamnaInArsredovisning(): BolagsverketApiDefinition?
+    fun lamnaInArsredovisning(): ApiDefinition?
+
+    interface ApiDefinition {
+        @WithName("baseurl")
+        fun baseurl(): String
+
+        @WithName("version")
+        fun version(): String
+    }
 
 }

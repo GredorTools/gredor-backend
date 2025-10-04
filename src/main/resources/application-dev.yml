@@ -17,8 +17,8 @@ gredor:
     # BankID är mockat i utvecklingsmiljön
     test-mode: true
   bolagsverket:
-    # Går mot Bolagsverkets statiska testmiljö
+    # Bolagsverkets API är mockat i utvecklingsmiljön
     hamta-arsredovisningsinformation:
-      baseurl: https://api-accept2.bolagsverket.se/testapi/hamta-arsredovisningsinformation/
+      baseurl: unused
     lamna-in-arsredovisning:
-      baseurl: https://api-accept2.bolagsverket.se/testapi/lamna-in-arsredovisning/
+      baseurl: unused
