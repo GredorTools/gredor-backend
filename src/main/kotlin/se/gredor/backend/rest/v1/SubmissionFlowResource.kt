@@ -4,6 +4,7 @@ import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.InlamningOK
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.KontrolleraSvar
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
@@ -13,6 +14,7 @@ import se.gredor.backend.bolagsverket.PreparationResponse
 import se.gredor.backend.rest.v1.model.gredor.PreparationRequest
 import se.gredor.backend.rest.v1.model.gredor.SubmissionRequest
 import se.gredor.backend.rest.v1.model.gredor.ValidationRequest
+import se.gredor.backend.rest.v1.util.createErrorResponse
 
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
@@ -29,7 +31,12 @@ class SubmissionFlowResource {
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
     ): PreparationResponse {
         return bolagsverketService.prepareSubmission(
-            personalNumber ?: throw IllegalArgumentException("Personal number is required"),
+            personalNumber ?: throw BadRequestException(
+                createErrorResponse(
+                    Response.Status.BAD_REQUEST,
+                    "Personal number is required"
+                )
+            ),
             preparationRequest.foretagOrgnr
         )
     }
@@ -43,7 +50,12 @@ class SubmissionFlowResource {
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
     ): KontrolleraSvar {
         return bolagsverketService.validateSubmission(
-            personalNumber ?: throw IllegalArgumentException("Personal number is required"),
+            personalNumber ?: throw BadRequestException(
+                createErrorResponse(
+                    Response.Status.BAD_REQUEST,
+                    "Personal number is required"
+                )
+            ),
             validationRequest.foretagOrgnr,
             validationRequest.ixbrl
         )
@@ -58,7 +70,12 @@ class SubmissionFlowResource {
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
     ): InlamningOK {
         return bolagsverketService.submitSubmission(
-            personalNumber ?: throw IllegalArgumentException("Personal number is required"),
+            personalNumber ?: throw BadRequestException(
+                createErrorResponse(
+                    Response.Status.BAD_REQUEST,
+                    "Personal number is required"
+                )
+            ),
             submissionRequest.foretagOrgnr,
             submissionRequest.ixbrl,
             submissionRequest.aviseringEpost

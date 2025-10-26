@@ -6,11 +6,11 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
-import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.ext.Provider
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
+import se.gredor.backend.rest.v1.util.createErrorResponse
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -44,11 +44,6 @@ class AuthFilter : ContainerRequestFilter {
     }
 
     private fun abortWithUnauthorized(requestContext: ContainerRequestContext, message: String) {
-        requestContext.abortWith(
-            Response.status(Response.Status.UNAUTHORIZED)
-                .entity(mapOf("error" to message))
-                .type(MediaType.APPLICATION_JSON)
-                .build()
-        )
+        requestContext.abortWith(createErrorResponse(Response.Status.UNAUTHORIZED, message))
     }
 }

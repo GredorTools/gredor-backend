@@ -32,6 +32,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
     testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:3.1.0")
     testImplementation("io.rest-assured:rest-assured")
 
     implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.11.0")

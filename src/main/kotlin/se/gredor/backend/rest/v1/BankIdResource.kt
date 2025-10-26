@@ -10,6 +10,7 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.Response.Status
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
 import se.gredor.backend.auth.AuthService
@@ -21,6 +22,7 @@ import se.gredor.backend.config.RestConfig
 import se.gredor.backend.rest.v1.model.bankid.AuthInitRequest
 import se.gredor.backend.rest.v1.model.bankid.AuthStatusRequest
 import se.gredor.backend.rest.v1.model.bankid.CancelRequest
+import se.gredor.backend.rest.v1.util.createErrorResponse
 import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
 @Path("/v1/bankid")
@@ -65,7 +67,9 @@ class BankIdResource {
 
             // Begränsa antal legitimeringar
             if (!authService.isWithinAuthLimit(request.personalNumber)) {
-                throw BadRequestException("Too many total authentications")
+                throw BadRequestException(
+                    createErrorResponse(Status.BAD_REQUEST, "Too many authentications")
+                )
             }
 
             // Skicka förfrågan till BankID
@@ -74,7 +78,9 @@ class BankIdResource {
 
             return response
         } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid parameters", e)
+            throw BadRequestException(
+                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+            )
         }
     }
 
@@ -89,7 +95,9 @@ class BankIdResource {
 
             return response
         } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid parameters", e)
+            throw BadRequestException(
+                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+            )
         }
     }
 
@@ -101,7 +109,9 @@ class BankIdResource {
             bankIdService.cancel(request.orderRef)
             return Response.ok().build()
         } catch (e: IllegalArgumentException) {
-            throw BadRequestException("Invalid parameters", e)
+            throw BadRequestException(
+                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+            )
         }
     }
 
