@@ -1,78 +1,74 @@
 ![Gredor backend](./assets/banner.png)
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Gredor är ett kostnadsfritt webbaserat verktyg för att ta fram årsredovisningar
+och skicka in dem till Bolagsverket i iXBRL-format. Verktyget har stöd för alla
+delar i en vanlig K2-årsredovisning för aktiebolag utan revisor.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+Backenden är Quarkus-baserad och byggd för att kunna köras i en container.
 
-## Running the application in dev mode
+Applikationen är lite speciell på så sätt att frontenden innehåller i princip
+all logik, och backenden används i princip bara för att kommunicera med
+Bolagsverket och BankID. Detta för att utnyttja faktumet att iXBRL kan
+integreras i XHTML och därmed byggas upp i webbläsaren med
+live-förhandsgranskning.
 
-You can run your application in dev mode that enables live coding using:
 
-```shell script
-./gradlew quarkusDev
+## Köra Gredor-backenden lokalt
+
+### Förberedelser första gången
+
+Sätt först följande miljövariabel:
+
+```
+GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Kör sedan:
 
-## Packaging and running the application
+```sh
+./gradlew quarkusDev -Djava.net.preferIPv4Stack=true
+```
 
-The application can be packaged using:
+## Bygga Gredor-backenden
 
-```shell script
+Kör:
+
+```sh
 ./gradlew build
 ```
 
-It produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `build/quarkus-app/lib/` directory.
+När backenden sedan körs måste följande miljövariabler vara satta:
 
-The application is now runnable using `java -jar build/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./gradlew build -Dquarkus.package.jar.type=uber-jar
+```
+QUARKUS_PROFILE=<normalt "acc" eller "prod" beorende på miljötyp>
+GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
+GREDOR_SECRETS_CONFIG_PATH=<path till din gredor-secrets.yaml (se nedan)>
+GREDOR_USE_X_REAL_IP=<true eller false beroende på om du har en proxy framför Gredor>
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar build/*-runner.jar`.
+Format på gredor-secrets.yaml:
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./gradlew build -Dquarkus.native.enabled=true
+```yaml
+gredor:
+  secrets:
+    cert-bankid:
+      path: <path till certifikatfilen>
+      password: <lösenord till certifikatfilen>
+    cert-bolagsverket:
+      path: <path till certifikatfilen>
+      password: <lösenord till certifikatfilen>
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
 
-```shell script
-./gradlew build -Dquarkus.native.enabled=true -Dquarkus.native.container-build=true
-```
+## Vill du bidra?
 
-You can then execute your native executable with: `./build/gredor-backend-1.0-SNAPSHOT-runner`
+Bidrag till projektet uppskattas stort! Dock är det viktigt att tänka på att
+t.ex. nya funktioner och förändringar måste passa bra med Gredor i övrigt. Om du
+vill bidra med något större, öppna gärna en issue och/eller utkasts-PR för att
+få tidig återkoppling på dina tänkta ändringar.
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/gradle-tooling>.
 
-## Related Guides
+## Licens
 
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and
-  Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on
-  it.
-- YAML Configuration ([guide](https://quarkus.io/guides/config-yaml)): Use YAML to configure your Quarkus application
-- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
-
-## Provided Code
-
-### YAML Config
-
-Configure your application with YAML
-
-[Related guide section...](https://quarkus.io/guides/config-reference#configuration-examples)
-
-The Quarkus application configuration is located in `src/main/resources/application.yml`.
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
+Gredor distribueras under AGPLv3-licens, med en tilläggsklausul för friare
+sammansättning med annan programvara.
