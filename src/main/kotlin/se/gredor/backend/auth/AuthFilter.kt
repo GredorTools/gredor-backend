@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.Priorities
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
-import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.Response.Status
 import jakarta.ws.rs.ext.Provider
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
@@ -27,7 +27,7 @@ class AuthFilter : ContainerRequestFilter {
         val token = cookies[TOKEN_COOKIE_NAME]?.value
 
         if (token == null || personalNumber == null) {
-            abortWithUnauthorized(requestContext, "Missing required cookies")
+            requestContext.abortWith(createErrorResponse(Status.UNAUTHORIZED, "Missing required cookies"))
             return
         }
 
@@ -39,11 +39,8 @@ class AuthFilter : ContainerRequestFilter {
         }
 
         if (!isValid) {
-            abortWithUnauthorized(requestContext, "Invalid authentication token")
+            requestContext.abortWith(createErrorResponse(Status.UNAUTHORIZED, "Invalid authentication token"))
         }
     }
 
-    private fun abortWithUnauthorized(requestContext: ContainerRequestContext, message: String) {
-        requestContext.abortWith(createErrorResponse(Response.Status.UNAUTHORIZED, message))
-    }
 }
