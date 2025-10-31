@@ -2,10 +2,6 @@ quarkus:
   # Ladda in konfiguration med secrets
   config:
     locations: file:${GREDOR_SECRETS_CONFIG_PATH}  # Ska vara en yaml-fil
-  # Databas
-  datasource:
-    jdbc:
-      url: jdbc:sqlite:${GREDOR_DATABASE_PATH}?busy_timeout=10000
   # Autentisering mot andra API:er
   tls:
     bolagsverket:

@@ -10,6 +10,7 @@ quarkus:
   datasource:
     db-kind: sqlite
     jdbc:
+      url: jdbc:sqlite:${GREDOR_DATABASE_PATH}?busy_timeout=10000
       max-size: 1  # Viktigt med SQLite att inte ha flera anslutningar samtidigt
     devservices:
       enabled: false  # Funkar inte med SQLite

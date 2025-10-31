@@ -1,8 +1,5 @@
 # Overrides för utvecklingsmiljö
 quarkus:
-  config:
-    profile:
-      parent: server
   http:
     cors:
       origins: /.*/
@@ -22,3 +19,5 @@ gredor:
       baseurl: unused
     lamna-in-arsredovisning:
       baseurl: unused
+  rest:
+    use-x-real-ip: false

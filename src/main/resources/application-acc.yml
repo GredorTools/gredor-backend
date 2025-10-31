@@ -2,7 +2,7 @@
 quarkus:
   config:
     profile:
-      parent: server
+      parent: nondevserver
   http:
     cors:
       origins: https://acc.test.gredor.se
