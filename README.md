@@ -15,19 +15,18 @@ live-förhandsgranskning.
 
 ## Köra Gredor-backenden lokalt
 
-### Förberedelser första gången
-
 Sätt först följande miljövariabel:
 
 ```
 GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
 ```
 
-Kör sedan:
+Kör sedan detta för att starta en utvecklingsserver:
 
 ```sh
 ./gradlew quarkusDev -Djava.net.preferIPv4Stack=true
 ```
+
 
 ## Bygga Gredor-backenden
 
@@ -43,7 +42,7 @@ När backenden sedan körs måste följande miljövariabler vara satta:
 QUARKUS_PROFILE=<normalt "acc" eller "prod" beorende på miljötyp>
 GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
 GREDOR_SECRETS_CONFIG_PATH=<path till din gredor-secrets.yaml (se nedan)>
-GREDOR_USE_X_REAL_IP=<true eller false beroende på om du har en proxy framför Gredor>
+GREDOR_USE_X_REAL_IP=<"true" eller "false" beroende på om du har en proxy framför Gredor>
 ```
 
 Format på gredor-secrets.yaml:
