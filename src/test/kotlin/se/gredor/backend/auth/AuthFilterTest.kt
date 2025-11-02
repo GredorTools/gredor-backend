@@ -23,7 +23,7 @@ class AuthFilterTest {
     lateinit var authService: AuthService
 
     @Test
-    fun submissionFlow_withoutCookies_returns401() {
+    fun testPost_withoutCookies_returns401() {
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .post("/test-rest-controller/auth-filter/test-post")
@@ -33,7 +33,7 @@ class AuthFilterTest {
     }
 
     @Test
-    fun submissionFlow_withInvalidCookies_returns401() {
+    fun testPost_withInvalidCookies_returns401() {
         val token = UUID.randomUUID().toString()
         every { authService.verifyToken(mockPnr, token) } throws UnauthorizedException()
 
@@ -50,7 +50,7 @@ class AuthFilterTest {
     }
 
     @Test
-    fun submissionFlow_withValidCookies_success() {
+    fun testPost_withValidCookies_success() {
         val token = UUID.randomUUID().toString()
         every { authService.verifyToken(mockPnr, token) } returns true
 
@@ -66,6 +66,9 @@ class AuthFilterTest {
             .body("success", equalTo(true))
     }
 
+    /**
+     * Rest-controller med autentiseringskrav, används endast i AuthFilterTest.
+     */
     @Path("/test-rest-controller/auth-filter/")
     @AuthenticationRequired
     class AuthFilterTestRestController {
