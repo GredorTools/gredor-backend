@@ -1,6 +1,5 @@
 package se.gredor.backend.rest.v1
 
-import io.quarkus.security.UnauthorizedException
 import io.vertx.core.http.Cookie.cookie
 import io.vertx.core.http.CookieSameSite
 import io.vertx.ext.web.RoutingContext
@@ -14,18 +13,17 @@ import jakarta.ws.rs.core.Response.Status
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
 import se.gredor.backend.auth.AuthService
-import se.gredor.backend.bankid.AuthStatus
 import se.gredor.backend.bankid.BankIdService
+import se.gredor.backend.bankid.BankIdStatus
 import se.gredor.backend.bankid.BankIdStatusResponse
-import se.gredor.backend.bankid.StatusCompleteData
 import se.gredor.backend.config.RestConfig
-import se.gredor.backend.rest.v1.model.bankid.AuthInitRequest
-import se.gredor.backend.rest.v1.model.bankid.AuthStatusRequest
-import se.gredor.backend.rest.v1.model.bankid.CancelRequest
+import se.gredor.backend.rest.v1.model.bankid.BankIdCancelRequest
+import se.gredor.backend.rest.v1.model.bankid.BankIdInitRequest
+import se.gredor.backend.rest.v1.model.bankid.BankIdStatusRequest
 import se.gredor.backend.rest.v1.util.createErrorResponse
 import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
-@Path("/v1/bankid")
+@Path("/v1/bankid/")
 class BankIdResource {
     @Inject
     private lateinit var authService: AuthService
@@ -37,34 +35,11 @@ class BankIdResource {
     private lateinit var restConfig: RestConfig
 
     @POST
-    @Path("/init")
+    @Path("init")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun authInit(
-        @Valid request: AuthInitRequest,
-        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumberFromCookie: String?,
-        @CookieParam(TOKEN_COOKIE_NAME) tokenFromCookie: String?,
-        @Context context: RoutingContext
-    ): BankIdStatusResponse {
+    fun authInit(@Valid request: BankIdInitRequest, @Context context: RoutingContext): BankIdStatusResponse {
         try {
-            try {
-                // Om man redan är legitimerad ska man bara släppas igenom
-                if (personalNumberFromCookie != null
-                    && personalNumberFromCookie == request.personalNumber
-                    && tokenFromCookie != null
-                    && authService.verifyToken(personalNumberFromCookie, tokenFromCookie)
-                ) {
-                    return BankIdStatusResponse(
-                        status = AuthStatus.COMPLETE,
-                        statusCompleteData = StatusCompleteData(
-                            personalNumber = personalNumberFromCookie,
-                            token = tokenFromCookie
-                        )
-                    )
-                }
-            } catch (_: UnauthorizedException) {
-            }
-
             // Begränsa antal legitimeringar
             if (!authService.isWithinAuthLimit(request.personalNumber)) {
                 throw BadRequestException(
@@ -85,10 +60,10 @@ class BankIdResource {
     }
 
     @POST
-    @Path("/status")
+    @Path("status")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun authStatus(@Valid request: AuthStatusRequest, @Context context: RoutingContext): BankIdStatusResponse {
+    fun authStatus(@Valid request: BankIdStatusRequest, @Context context: RoutingContext): BankIdStatusResponse {
         try {
             val response = bankIdService.authStatus(request.orderRef)
             updateCookies(response, context)
@@ -102,9 +77,9 @@ class BankIdResource {
     }
 
     @POST
-    @Path("/cancel")
+    @Path("cancel")
     @Consumes(MediaType.APPLICATION_JSON)
-    fun cancel(@Valid request: CancelRequest): Response {
+    fun cancel(@Valid request: BankIdCancelRequest): Response {
         try {
             bankIdService.cancel(request.orderRef)
             return Response.ok().build()
@@ -116,7 +91,7 @@ class BankIdResource {
     }
 
     private fun updateCookies(response: BankIdStatusResponse, context: RoutingContext) {
-        if (response.status == AuthStatus.COMPLETE && response.statusCompleteData != null) {
+        if (response.status == BankIdStatus.COMPLETE && response.statusCompleteData != null) {
             // Inloggad!
             context.response().addCookie(
                 cookie(PERSONAL_NUMBER_COOKIE_NAME, response.statusCompleteData.personalNumber)

@@ -13,8 +13,8 @@ import java.time.LocalDate
 @ApplicationScoped
 class BolagsverketServiceMock : BolagsverketService {
 
-    override fun getRecords(orgnr: String): RecordsResponse {
-        return RecordsResponse(
+    override fun getRecords(orgnr: String): BolagsverketRecordsResponse {
+        return BolagsverketRecordsResponse(
             foretagsnamn = "Mockbolaget AB",
             rakenskapsperioder = listOf(
                 Rakenskapsperiod().from(LocalDate.of(2021, 1, 1)).tom(LocalDate.of(2021, 12, 31)),
@@ -25,8 +25,8 @@ class BolagsverketServiceMock : BolagsverketService {
         )
     }
 
-    override fun prepareSubmission(personalNumber: String, foretagOrgnr: String): PreparationResponse {
-        return PreparationResponse(
+    override fun prepareSubmission(personalNumber: String, foretagOrgnr: String): BolagsverketPreparationResponse {
+        return BolagsverketPreparationResponse(
             avtalstext = "Mock avtalstext",
             avtalstextAndrad = LocalDate.of(2023, 10, 4)
         )

@@ -9,11 +9,11 @@ import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.InlamningOK
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.KontrolleraSvar
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthenticationRequired
+import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
-import se.gredor.backend.bolagsverket.PreparationResponse
-import se.gredor.backend.rest.v1.model.gredor.PreparationRequest
-import se.gredor.backend.rest.v1.model.gredor.SubmissionRequest
-import se.gredor.backend.rest.v1.model.gredor.ValidationRequest
+import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationRequest
+import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketSubmissionRequest
+import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationRequest
 import se.gredor.backend.rest.v1.util.createErrorResponse
 
 @Path("/v1/submission-flow/")
@@ -27,9 +27,9 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun prepare(
-        @Valid preparationRequest: PreparationRequest,
+        @Valid preparationRequest: BolagsverketPreparationRequest,
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
-    ): PreparationResponse {
+    ): BolagsverketPreparationResponse {
         return bolagsverketService.prepareSubmission(
             personalNumber ?: throw BadRequestException(
                 createErrorResponse(
@@ -46,7 +46,7 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun validate(
-        @Valid validationRequest: ValidationRequest,
+        @Valid validationRequest: BolagsverketValidationRequest,
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
     ): KontrolleraSvar {
         return bolagsverketService.validateSubmission(
@@ -66,7 +66,7 @@ class SubmissionFlowResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun submit(
-        @Valid submissionRequest: SubmissionRequest,
+        @Valid submissionRequest: BolagsverketSubmissionRequest,
         @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
     ): InlamningOK {
         return bolagsverketService.submitSubmission(

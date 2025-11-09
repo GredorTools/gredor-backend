@@ -74,8 +74,8 @@ class BankIdServiceImpl : BankIdService {
         return BankIdStatusResponse(
             orderRef = orderRef,
             autoStartToken = orderResponse.autoStartToken,
-            status = AuthStatus.PENDING,
-            statusPendingData = StatusPendingData(
+            status = BankIdStatus.PENDING,
+            statusPendingData = BankIdStatusPendingData(
                 qrCodeImageBase64 = generateQrCodeData(orderRef),
                 hintCode = null,
             )
@@ -100,8 +100,8 @@ class BankIdServiceImpl : BankIdService {
                 cleanOrderFromDatabase(orderRef)
 
                 BankIdStatusResponse(
-                    status = AuthStatus.COMPLETE,
-                    statusCompleteData = StatusCompleteData(
+                    status = BankIdStatus.COMPLETE,
+                    statusCompleteData = BankIdStatusCompleteData(
                         personalNumber = completionInfo.user.personalNumber,
                         token = authService.createToken(completionInfo.user.personalNumber)
                     )
@@ -110,8 +110,8 @@ class BankIdServiceImpl : BankIdService {
 
             CollectResponse.Status.PENDING ->
                 BankIdStatusResponse(
-                    status = AuthStatus.PENDING,
-                    statusPendingData = StatusPendingData(
+                    status = BankIdStatus.PENDING,
+                    statusPendingData = BankIdStatusPendingData(
                         qrCodeImageBase64 = generateQrCodeData(orderRef),
                         hintCode = collectResponse.hintCode
                     )
@@ -119,8 +119,8 @@ class BankIdServiceImpl : BankIdService {
 
             CollectResponse.Status.FAILED ->
                 BankIdStatusResponse(
-                    status = AuthStatus.FAILED,
-                    statusFailedData = StatusFailedData(
+                    status = BankIdStatus.FAILED,
+                    statusFailedData = BankIdStatusFailedData(
                         hintCode = collectResponse.hintCode
                     )
                 )

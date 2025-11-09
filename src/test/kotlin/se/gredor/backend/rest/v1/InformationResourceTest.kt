@@ -10,8 +10,8 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Rakenskapsperiod
+import se.gredor.backend.bolagsverket.BolagsverketRecordsResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
-import se.gredor.backend.bolagsverket.RecordsResponse
 import java.time.LocalDate
 
 @QuarkusTest
@@ -30,7 +30,7 @@ class InformationResourceTest {
             Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
         )
         every { bolagsverketService.getRecords(mockOrgnr) } returns
-                RecordsResponse(foretagsnamn = "Exempelbolaget AB", rakenskapsperioder = periods)
+                BolagsverketRecordsResponse(foretagsnamn = "Exempelbolaget AB", rakenskapsperioder = periods)
 
         given()
             .accept(MediaType.APPLICATION_JSON)

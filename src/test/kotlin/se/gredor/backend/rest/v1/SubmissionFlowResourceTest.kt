@@ -12,8 +12,8 @@ import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.InlamningOK
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.KontrolleraSvar
 import se.gredor.backend.auth.AuthConsts
 import se.gredor.backend.auth.AuthService
+import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
-import se.gredor.backend.bolagsverket.PreparationResponse
 import java.util.*
 
 @QuarkusTest
@@ -36,7 +36,7 @@ class SubmissionFlowResourceTest {
         val token = UUID.randomUUID().toString()
         every { authService.verifyToken(mockPnr, token) } returns true
         every { bolagsverketService.prepareSubmission(mockPnr, mockOrgnr) } returns
-                PreparationResponse(
+                BolagsverketPreparationResponse(
                     avtalstext = "mockAvtalstext",
                     avtalstextAndrad = java.time.LocalDate.of(2024, 1, 1)
                 )

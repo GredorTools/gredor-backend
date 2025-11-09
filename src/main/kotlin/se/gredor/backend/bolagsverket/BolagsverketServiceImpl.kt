@@ -33,19 +33,19 @@ class BolagsverketServiceImpl : BolagsverketService {
     @RestClient
     private lateinit var kontrollApi: KontrollApi
 
-    override fun getRecords(orgnr: String): RecordsResponse {
+    override fun getRecords(orgnr: String): BolagsverketRecordsResponse {
         val grunduppgifter = informationApi.grunduppgifter(getHamtaArsredovisningsinformationApiUrl(), orgnr)
 
-        return RecordsResponse(
+        return BolagsverketRecordsResponse(
             foretagsnamn = grunduppgifter.namn,
             rakenskapsperioder = grunduppgifter.rakenskapsperioder
         )
     }
 
-    override fun prepareSubmission(personalNumber: String, foretagOrgnr: String): PreparationResponse {
+    override fun prepareSubmission(personalNumber: String, foretagOrgnr: String): BolagsverketPreparationResponse {
         val skapaTokenResult = retrieveToken(personalNumber, foretagOrgnr)
 
-        return PreparationResponse(
+        return BolagsverketPreparationResponse(
             avtalstext = skapaTokenResult.avtalstext,
             avtalstextAndrad = skapaTokenResult.avtalstextAndrad
         )

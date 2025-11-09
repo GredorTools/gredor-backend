@@ -27,8 +27,8 @@ class BankIdServiceMock : BankIdService {
         return BankIdStatusResponse(
             orderRef = orderRef,
             autoStartToken = UUID.randomUUID().toString(),
-            status = AuthStatus.PENDING,
-            statusPendingData = StatusPendingData(
+            status = BankIdStatus.PENDING,
+            statusPendingData = BankIdStatusPendingData(
                 qrCodeImageBase64 = mockQrCode,
                 hintCode = null
             ),
@@ -44,8 +44,8 @@ class BankIdServiceMock : BankIdService {
         val response = when (collectResponseStatus) {
             CollectResponse.Status.COMPLETE ->
                 BankIdStatusResponse(
-                    status = AuthStatus.COMPLETE,
-                    statusCompleteData = StatusCompleteData(
+                    status = BankIdStatus.COMPLETE,
+                    statusCompleteData = BankIdStatusCompleteData(
                         personalNumber = personalNumber,
                         token = authService.createToken(personalNumber),
                     ),
@@ -53,8 +53,8 @@ class BankIdServiceMock : BankIdService {
 
             CollectResponse.Status.PENDING ->
                 BankIdStatusResponse(
-                    status = AuthStatus.PENDING,
-                    statusPendingData = StatusPendingData(
+                    status = BankIdStatus.PENDING,
+                    statusPendingData = BankIdStatusPendingData(
                         qrCodeImageBase64 = mockQrCode,
                         hintCode = null
                     ),

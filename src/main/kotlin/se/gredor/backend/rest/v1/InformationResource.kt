@@ -6,8 +6,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
+import se.gredor.backend.bolagsverket.BolagsverketRecordsResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
-import se.gredor.backend.bolagsverket.RecordsResponse
 
 @Path("/v1/information/")
 class InformationResource {
@@ -17,7 +17,7 @@ class InformationResource {
     @GET
     @Path("records/{orgnr}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun records(@PathParam("orgnr") orgnr: String): RecordsResponse {
+    fun records(@PathParam("orgnr") orgnr: String): BolagsverketRecordsResponse {
         return bolagsverketService.getRecords(orgnr)
     }
 }

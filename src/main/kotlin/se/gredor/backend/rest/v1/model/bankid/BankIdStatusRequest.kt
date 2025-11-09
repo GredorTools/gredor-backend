@@ -4,7 +4,7 @@ import dev.drewhamilton.poko.Poko
 import jakarta.validation.constraints.Pattern
 
 @Poko
-class AuthStatusRequest(
+class BankIdStatusRequest(
 
     @field:Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\$")
     val orderRef: String

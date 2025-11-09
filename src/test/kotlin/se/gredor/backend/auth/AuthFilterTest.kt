@@ -75,10 +75,10 @@ class AuthFilterTest {
         @POST
         @Path("test-post")
         @Produces(MediaType.APPLICATION_JSON)
-        fun temptest(): TempTestResponse {
-            return TempTestResponse(true)
+        fun testPost(): TestPostResponse {
+            return TestPostResponse(true)
         }
 
-        data class TempTestResponse(val success: Boolean)
+        data class TestPostResponse(val success: Boolean)
     }
 }
