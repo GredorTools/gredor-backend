@@ -34,12 +34,8 @@ class BankIdServiceImpl : BankIdService {
     @Transactional
     override fun authInit(personalNumber: String, endUserIp: String): BankIdStatusResponse {
         // Grundläggande validering
-        if (personalNumber.isBlank()) {
-            throw IllegalArgumentException("personalNumber is required")
-        }
-        if (endUserIp.isBlank()) {
-            throw IllegalArgumentException("endUserIp is required")
-        }
+        require(!personalNumber.isBlank()) { "personalNumber is required" }
+        require(!endUserIp.isBlank()) { "endUserIp is required" }
 
         // Avbryt eventuella befintliga beställningar för samma personnummer och IP-adress
         bankIdOrderRepository.findByPersonalNumberAndEndUserIp(personalNumber, endUserIp).forEach {
@@ -84,9 +80,7 @@ class BankIdServiceImpl : BankIdService {
 
     override fun authStatus(orderRef: String): BankIdStatusResponse {
         // Grundläggande validering
-        if (orderRef.isBlank()) {
-            throw IllegalArgumentException("orderRef is required")
-        }
+        require(!orderRef.isBlank()) { "orderRef is required" }
 
         // Anropa BankID collect-API och blockera för resultat
         val collectResponse = bankIdClient.collect(orderRef).block()
@@ -131,9 +125,7 @@ class BankIdServiceImpl : BankIdService {
 
     override fun cancel(orderRef: String) {
         // Grundläggande validering
-        if (orderRef.isBlank()) {
-            throw IllegalArgumentException("orderRef is required")
-        }
+        require(!orderRef.isBlank()) { "orderRef is required" }
 
         // Anropa BankID avbryt-API
         bankIdClient.cancel(orderRef)

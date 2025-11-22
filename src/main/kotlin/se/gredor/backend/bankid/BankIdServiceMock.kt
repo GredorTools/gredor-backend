@@ -66,5 +66,7 @@ class BankIdServiceMock : BankIdService {
         return response
     }
 
-    override fun cancel(orderRef: String) {}
+    override fun cancel(orderRef: String) {
+        // Gör inget i mock
+    }
 }

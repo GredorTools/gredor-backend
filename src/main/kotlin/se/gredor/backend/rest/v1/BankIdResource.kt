@@ -54,7 +54,7 @@ class BankIdResource {
             return response
         } catch (e: IllegalArgumentException) {
             throw BadRequestException(
-                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+                createErrorResponse(Status.BAD_REQUEST, ERROR_TEXT_INVALID_PARAMETERS), e
             )
         }
     }
@@ -71,7 +71,7 @@ class BankIdResource {
             return response
         } catch (e: IllegalArgumentException) {
             throw BadRequestException(
-                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+                createErrorResponse(Status.BAD_REQUEST, ERROR_TEXT_INVALID_PARAMETERS), e
             )
         }
     }
@@ -85,7 +85,7 @@ class BankIdResource {
             return Response.ok().build()
         } catch (e: IllegalArgumentException) {
             throw BadRequestException(
-                createErrorResponse(Status.BAD_REQUEST, "Invalid parameters"), e
+                createErrorResponse(Status.BAD_REQUEST, ERROR_TEXT_INVALID_PARAMETERS), e
             )
         }
     }
@@ -112,3 +112,5 @@ class BankIdResource {
         }
     }
 }
+
+private const val ERROR_TEXT_INVALID_PARAMETERS = "Invalid parameters"

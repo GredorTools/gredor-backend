@@ -34,7 +34,7 @@ class SubmissionFlowResource {
             personalNumber ?: throw BadRequestException(
                 createErrorResponse(
                     Response.Status.BAD_REQUEST,
-                    "Personal number is required"
+                    ERROR_TEXT_PERSNR_REQUIRED
                 )
             ),
             preparationRequest.foretagOrgnr
@@ -53,7 +53,7 @@ class SubmissionFlowResource {
             personalNumber ?: throw BadRequestException(
                 createErrorResponse(
                     Response.Status.BAD_REQUEST,
-                    "Personal number is required"
+                    ERROR_TEXT_PERSNR_REQUIRED
                 )
             ),
             validationRequest.foretagOrgnr,
@@ -73,7 +73,7 @@ class SubmissionFlowResource {
             personalNumber ?: throw BadRequestException(
                 createErrorResponse(
                     Response.Status.BAD_REQUEST,
-                    "Personal number is required"
+                    ERROR_TEXT_PERSNR_REQUIRED
                 )
             ),
             submissionRequest.foretagOrgnr,
@@ -82,3 +82,5 @@ class SubmissionFlowResource {
         )
     }
 }
+
+private const val ERROR_TEXT_PERSNR_REQUIRED = "Personal number is required"

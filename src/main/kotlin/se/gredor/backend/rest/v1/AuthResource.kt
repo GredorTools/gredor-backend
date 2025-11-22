@@ -38,6 +38,7 @@ class AuthResource {
                 )
             }
         } catch (_: UnauthorizedException) {
+            // Ej inloggad
         }
 
         return AuthStatusResponse(
