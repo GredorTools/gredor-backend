@@ -19,6 +19,10 @@ quarkus:
   hibernate-orm:
     schema-management:
       strategy: validate
+  # Loggning
+  log:
+    console:
+      format: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c{3.}] (%t) [%X{request.id}] %s%e%n"
   # Generering av klasser från Bolagsverkets OpenAPI-scheman
   openapi-generator:
     codegen:

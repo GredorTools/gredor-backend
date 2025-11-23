@@ -43,6 +43,8 @@ class BolagsverketServiceImpl : BolagsverketService {
     }
 
     override fun prepareSubmission(personalNumber: String, foretagOrgnr: String): BolagsverketPreparationResponse {
+        logger.info("Preparing submission")
+
         val skapaTokenResult = retrieveToken(personalNumber, foretagOrgnr)
 
         return BolagsverketPreparationResponse(
@@ -52,6 +54,8 @@ class BolagsverketServiceImpl : BolagsverketService {
     }
 
     override fun validateSubmission(personalNumber: String, foretagOrgnr: String, ixbrl: ByteArray): KontrolleraSvar {
+        logger.info("Validating submission")
+
         val skapaTokenResult = retrieveToken(personalNumber, foretagOrgnr)
 
         val kontrolleraResult = kontrollApi.kontrollera(
@@ -70,6 +74,8 @@ class BolagsverketServiceImpl : BolagsverketService {
         ixbrl: ByteArray,
         aviseringEpost: String
     ): InlamningOK {
+        logger.info("Submitting submission")
+
         val skapaTokenResult = retrieveToken(personalNumber, foretagOrgnr)
 
         val inlamningResult = inlamningApi.inlamning(
@@ -95,6 +101,8 @@ class BolagsverketServiceImpl : BolagsverketService {
         personalNumber: String,
         foretagOrgnr: String
     ): SkapaTokenOK {
+        logger.info("Retrieving token")
+
         return inlamningApi.skapaInlamningtoken(
             getLamnaInArsredovisningApiUrl(),
             SkapaInlamningTokenAnrop()
