@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.jpa") version "2.2.21"
     id("io.quarkus")
     id("dev.drewhamilton.poko") version "0.20.1"
+    id("jacoco")
 }
 
 repositories {
@@ -31,9 +32,11 @@ dependencies {
     implementation("io.quarkus:quarkus-flyway")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
+
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:3.1.0")
     testImplementation("io.rest-assured:rest-assured")
+    testImplementation("io.quarkus:quarkus-jacoco")
 
     implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.11.0")
     implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
@@ -76,5 +79,34 @@ sourceSets {
         java {
             srcDir("build/classes/java/quarkus-generated-sources/open-api")
         }
+    }
+}
+
+// Jacoco
+tasks.test {
+    finalizedBy("jacocoTestReport")
+    extensions.configure(JacocoTaskExtension::class) {
+        excludeClassLoaders = listOf("*QuarkusClassLoader")
+        destinationFile = layout.buildDirectory.file("jacoco-quarkus.exec").get().asFile
+    }
+}
+
+tasks.withType<JacocoCoverageVerification> {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude("org/openapi/**", "**/*Mock.class")
+            }
+        }))
+    }
+}
+
+tasks.withType<JacocoReport> {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude("org/openapi/**", "**/*Mock.class")
+            }
+        }))
     }
 }
