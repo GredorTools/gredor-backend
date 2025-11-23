@@ -109,4 +109,9 @@ tasks.withType<JacocoReport> {
             }
         }))
     }
+
+    reports {
+        xml.required = true
+        html.required = false
+    }
 }

@@ -2,6 +2,11 @@ name: Build
 
 description: Sätter upp JDK och Gradle, samt bygger och testar applikationen.
 
+inputs:
+  codecov_token:
+    description: "CODECOV_TOKEN"
+    required: false
+
 runs:
   using: composite
   steps:
@@ -17,3 +22,8 @@ runs:
     - name: Build and test
       run: ./gradlew build
       shell: bash
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ inputs.codecov_token }}
