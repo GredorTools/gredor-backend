@@ -19,7 +19,6 @@ import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationReque
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketSubmissionRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationRequest
 import se.gredor.backend.rest.v1.util.createErrorResponse
-import java.util.*
 
 
 @Path("/v1/submission-flow/")
@@ -93,19 +92,18 @@ class SubmissionFlowResource {
 
     @ServerExceptionMapper
     fun handleWebApplicationException(exception: WebApplicationException): Response {
-        UUID.randomUUID().toString()
         if (exception.response.status == 400 && exception.response.hasEntity()) {
             try {
                 val fel = exception.response.readEntity(Fel::class.java)
                 logger.error("Error from Bolagsverket: $fel")
 
-                if (fel.kod == 9004) {
+                return if (fel.kod == 9004) {
                     // Felmeddelande "Tekniskt felaktig request" - detta beror troligtvis på fel i Gredor så vi
                     // returnerar tekniskt fel
-                    return createTechnicalErrorResponse()
+                    createTechnicalErrorResponse()
                 } else {
                     // Skicka annars vidare felmeddelandet från Bolagsverket
-                    return Response.status(exception.response.status).type(MediaType.TEXT_PLAIN).entity(fel.text)
+                    Response.status(exception.response.status).type(MediaType.TEXT_PLAIN).entity(fel.text)
                         .build()
                 }
             } catch (_: ProcessingException) {
