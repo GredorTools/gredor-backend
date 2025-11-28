@@ -26,6 +26,7 @@ class BankIdResourceTest {
 
     @Test
     fun init_startsAuth_andReturnsPending() {
+        // Mocka
         val response = BankIdStatusResponse(
             orderRef = mockOrderRef,
             autoStartToken = UUID.randomUUID().toString(),
@@ -36,6 +37,7 @@ class BankIdResourceTest {
         every { authService.isWithinAuthLimit(mockPnr) } returns true
         every { bankIdService.authInit(mockPnr, any()) } returns response
 
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -49,8 +51,10 @@ class BankIdResourceTest {
 
     @Test
     fun init_aboveAuthLimit_returns400() {
+        // Mocka
         every { authService.isWithinAuthLimit(mockPnr) } returns false
 
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -63,6 +67,7 @@ class BankIdResourceTest {
 
     @Test
     fun status_complete_setsCookies() {
+        // Mocka
         val response = BankIdStatusResponse(
             status = BankIdStatus.COMPLETE,
             statusCompleteData = BankIdStatusCompleteData(
@@ -72,6 +77,7 @@ class BankIdResourceTest {
         )
         every { bankIdService.authStatus(mockOrderRef) } returns response
 
+        // Kör och verifiera
         val requestJson = """{"orderRef":"$mockOrderRef"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -85,8 +91,10 @@ class BankIdResourceTest {
 
     @Test
     fun cancel_success() {
+        // Mocka
         every { bankIdService.cancel(mockOrderRef) } returns Unit
 
+        // Kör och verifiera
         val requestJson = """{"orderRef":"$mockOrderRef"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)

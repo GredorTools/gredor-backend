@@ -22,6 +22,7 @@ class AuthResourceTest {
 
     @Test
     fun status_noCookies_returnsLoggedInFalse() {
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -35,8 +36,11 @@ class AuthResourceTest {
     @Test
     fun status_notAuthenticated_returnsLoggedInFalse() {
         val token = UUID.randomUUID().toString()
+
+        // Mocka
         every { authService.verifyToken(mockPnr, token) } returns false
 
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -55,8 +59,11 @@ class AuthResourceTest {
     fun status_authenticatedWithOtherPnr_returnsLoggedInFalse() {
         val otherPnr = "191212121212"
         val token = UUID.randomUUID().toString()
+
+        // Mocka
         every { authService.verifyToken(otherPnr, token) } returns true
 
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)
@@ -74,8 +81,11 @@ class AuthResourceTest {
     @Test
     fun status_authenticatedWithSamePnr_returnsLoggedInTrue() {
         val token = UUID.randomUUID().toString()
-        every { authService.verifyToken(mockPnr, token) } returns true
 
+        // Mocka
+        every { authService.verifyToken(mockPnr, token) } returns true
+        
+        // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
             .contentType(MediaType.APPLICATION_JSON)

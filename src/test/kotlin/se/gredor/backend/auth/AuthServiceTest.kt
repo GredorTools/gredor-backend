@@ -32,8 +32,6 @@ class AuthServiceTest {
         val token = authService.createToken(mockPnr)
         assertNotNull(token)
         assertTrue(token.length >= 10)
-
-        // should verify as true
         assertTrue(authService.verifyToken(mockPnr, token))
     }
 

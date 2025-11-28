@@ -29,9 +29,12 @@ class InformationResourceTest {
             Rakenskapsperiod().from(LocalDate.of(2023, 1, 1)).tom(LocalDate.of(2023, 12, 31)),
             Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
         )
+        
+        // Mocka
         every { bolagsverketService.getRecords(mockOrgnr) } returns
                 BolagsverketRecordsResponse(foretagsnamn = "Exempelbolaget AB", rakenskapsperioder = periods)
 
+        // Kör och verifiera
         given()
             .accept(MediaType.APPLICATION_JSON)
             .get("/v1/information/records/$mockOrgnr")

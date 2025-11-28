@@ -8,7 +8,6 @@ import io.restassured.RestAssured.given
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
-import jakarta.ws.rs.core.HttpHeaders
 import jakarta.ws.rs.core.MediaType
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
@@ -24,6 +23,7 @@ class AuthFilterTest {
 
     @Test
     fun testPost_withoutCookies_returns401() {
+        // Kör och verifiera
         given()
             .contentType(MediaType.APPLICATION_JSON)
             .post("/test-rest-controller/auth-filter/test-post")
@@ -35,14 +35,15 @@ class AuthFilterTest {
     @Test
     fun testPost_withInvalidCookies_returns401() {
         val token = UUID.randomUUID().toString()
+
+        // Mocka
         every { authService.verifyToken(mockPnr, token) } throws UnauthorizedException()
 
+        // Kör och verifiera
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .header(
-                HttpHeaders.COOKIE,
-                "${AuthConsts.PERSONAL_NUMBER_COOKIE_NAME}=$mockPnr; ${AuthConsts.TOKEN_COOKIE_NAME}=$token"
-            )
+            .cookie("personalNumber", mockPnr)
+            .cookie("token", token)
             .post("/test-rest-controller/auth-filter/test-post")
             .then()
             .statusCode(401)
@@ -52,14 +53,15 @@ class AuthFilterTest {
     @Test
     fun testPost_withValidCookies_success() {
         val token = UUID.randomUUID().toString()
+
+        // Mocka
         every { authService.verifyToken(mockPnr, token) } returns true
 
+        // Kör och verifiera
         given()
             .contentType(MediaType.APPLICATION_JSON)
-            .header(
-                HttpHeaders.COOKIE,
-                "${AuthConsts.PERSONAL_NUMBER_COOKIE_NAME}=$mockPnr; ${AuthConsts.TOKEN_COOKIE_NAME}=$token"
-            )
+            .cookie("personalNumber", mockPnr)
+            .cookie("token", token)
             .post("/test-rest-controller/auth-filter/test-post")
             .then()
             .statusCode(200)

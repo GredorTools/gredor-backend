@@ -10,6 +10,7 @@ class PingResourceTest {
 
     @Test
     fun ping_returnsPong() {
+        // Kör och verifiera
         given()
             .get("/v1/ping/ping")
             .then()
