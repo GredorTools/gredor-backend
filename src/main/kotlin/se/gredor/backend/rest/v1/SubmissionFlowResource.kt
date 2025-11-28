@@ -7,6 +7,7 @@ import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.ClientWebApplicationException
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.Fel
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.InlamningOK
@@ -91,7 +92,7 @@ class SubmissionFlowResource {
     }
 
     @ServerExceptionMapper
-    fun handleWebApplicationException(exception: WebApplicationException): Response {
+    fun handleClientWebApplicationException(exception: ClientWebApplicationException): Response {
         if (exception.response.status == 400 && exception.response.hasEntity()) {
             try {
                 val fel = exception.response.readEntity(Fel::class.java)
