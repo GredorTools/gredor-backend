@@ -74,15 +74,26 @@ class AuthServiceTest {
     @Test
     @Transactional
     fun cleanOldTokens_deletesExpired() {
-        val token = authService.createToken(mockPnr)
+        val tokenToBeDeleted = authService.createToken(mockPnr)
 
         // Ändra i databasen så att denna token har gått ut
-        val ent = authRespository.find("personalNumber = ?1 AND token = ?2", mockPnr, token).firstResult<AuthEntity>()
-        ent!!.expiresAt = Instant.now().minus(Duration.ofHours(2)).toEpochMilli()
-        ent.persist()
+        val entToBeDeleted = authRespository.find("personalNumber = ?1 AND token = ?2", mockPnr, tokenToBeDeleted)
+            .firstResult<AuthEntity>()
+        entToBeDeleted!!.expiresAt = Instant.now().minus(Duration.ofHours(2)).toEpochMilli()
+        entToBeDeleted.persist()
 
         assertEquals(1, authRespository.count())
         authService.cleanOldTokens()
         assertEquals(0, authRespository.count())
+    }
+
+    @Test
+    @Transactional
+    fun cleanOldTokens_keepsNonexpired() {
+        authService.createToken(mockPnr)
+
+        assertEquals(1, authRespository.count())
+        authService.cleanOldTokens()
+        assertEquals(1, authRespository.count())
     }
 }
