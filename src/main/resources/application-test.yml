@@ -23,7 +23,7 @@ gredor:
     lamna-in-arsredovisning:
       baseurl: unused
   rest:
-    use-x-real-ip: false
+    use-x-real-ip: true
   secrets:
     # Används ej i dessa tester
     cert-bankid:

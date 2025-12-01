@@ -35,11 +35,12 @@ class BankIdResourceTest {
         )
         every { authService.verifyToken(any(), any()) } throws RuntimeException("Should not be called")
         every { authService.isWithinAuthLimit(mockPnr) } returns true
-        every { bankIdService.authInit(mockPnr, any()) } returns response
+        every { bankIdService.authInit(mockPnr, "127.0.13.37") } returns response
 
         // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()
+            .header("X-Real-IP", "127.0.13.37")
             .contentType(MediaType.APPLICATION_JSON)
             .body(requestJson)
             .post("/v1/bankid/init")
