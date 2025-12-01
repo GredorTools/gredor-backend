@@ -30,6 +30,9 @@ class BankIdResource {
     private val ERROR_TEXT_INVALID_PARAMETERS = "Invalid parameters"
 
     @Inject
+    internal lateinit var logger: Logger
+
+    @Inject
     private lateinit var authService: AuthService
 
     @Inject
@@ -46,6 +49,7 @@ class BankIdResource {
         try {
             // Begränsa antal legitimeringar
             if (!authService.isWithinAuthLimit(request.personalNumber)) {
+                logger.warn("BankID authentication prevented due to too many authentications")
                 throw BadRequestException(
                     createErrorResponse(Status.BAD_REQUEST, "Too many authentications")
                 )

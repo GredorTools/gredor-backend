@@ -43,6 +43,7 @@ class BankIdServiceImpl : BankIdService {
         }
 
         // Skapa BankID-autentiseringsbegäran
+        logger.info("Initializing BankID authentication")
         val userVisibleData = UserVisibleData().apply {
             setDisplayText("Använda Gredor för att kontrollera och/eller ladda upp en årsredovisning.")
         }
@@ -91,6 +92,8 @@ class BankIdServiceImpl : BankIdService {
                 val completionInfo = collectResponse.completionData
                     ?: throw RuntimeException("Missing completion data for completed authentication")
 
+                logger.info("BankID authentication succeeded")
+
                 cleanOrderFromDatabase(orderRef)
 
                 BankIdStatusResponse(
@@ -111,13 +114,16 @@ class BankIdServiceImpl : BankIdService {
                     )
                 )
 
-            CollectResponse.Status.FAILED ->
+            CollectResponse.Status.FAILED -> {
+                logger.info("BankID authentication failed with hint code: ${collectResponse.hintCode}")
+
                 BankIdStatusResponse(
                     status = BankIdStatus.FAILED,
                     statusFailedData = BankIdStatusFailedData(
                         hintCode = collectResponse.hintCode
                     )
                 )
+            }
         }
 
         return response
@@ -126,6 +132,8 @@ class BankIdServiceImpl : BankIdService {
     override fun cancel(orderRef: String) {
         // Grundläggande validering
         require(!orderRef.isBlank()) { "orderRef is required" }
+
+        logger.info("Cancelling BankID authentication")
 
         // Anropa BankID avbryt-API
         bankIdClient.cancel(orderRef)
