@@ -11,7 +11,6 @@ import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.api.KontrollApi
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import se.gredor.backend.config.BolagsverketConfig
 
 @UnlessBuildProfile("dev")
 @ApplicationScoped

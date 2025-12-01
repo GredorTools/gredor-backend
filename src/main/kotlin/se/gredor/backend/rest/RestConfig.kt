@@ -1,4 +1,4 @@
-package se.gredor.backend.config
+package se.gredor.backend.rest
 
 import io.smallrye.config.ConfigMapping
 import io.smallrye.config.WithName

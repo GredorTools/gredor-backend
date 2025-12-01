@@ -10,13 +10,14 @@ import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.Response.Status
+import org.jboss.logging.Logger
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
 import se.gredor.backend.auth.AuthService
 import se.gredor.backend.bankid.BankIdService
 import se.gredor.backend.bankid.BankIdStatus
 import se.gredor.backend.bankid.BankIdStatusResponse
-import se.gredor.backend.config.RestConfig
+import se.gredor.backend.rest.RestConfig
 import se.gredor.backend.rest.v1.model.bankid.BankIdCancelRequest
 import se.gredor.backend.rest.v1.model.bankid.BankIdInitRequest
 import se.gredor.backend.rest.v1.model.bankid.BankIdStatusRequest
@@ -25,6 +26,9 @@ import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
 @Path("/v1/bankid/")
 class BankIdResource {
+
+    private val ERROR_TEXT_INVALID_PARAMETERS = "Invalid parameters"
+
     @Inject
     private lateinit var authService: AuthService
 
@@ -112,5 +116,3 @@ class BankIdResource {
         }
     }
 }
-
-private const val ERROR_TEXT_INVALID_PARAMETERS = "Invalid parameters"

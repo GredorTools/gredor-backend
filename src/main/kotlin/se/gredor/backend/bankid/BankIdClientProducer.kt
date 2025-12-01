@@ -6,7 +6,6 @@ import jakarta.inject.Inject
 import org.springframework.context.annotation.Bean
 import org.springframework.core.io.Resource
 import org.springframework.web.reactive.function.client.WebClient
-import se.gredor.backend.config.BankIdConfig
 import se.swedenconnect.bankid.rpapi.service.BankIDClient
 import se.swedenconnect.bankid.rpapi.service.impl.BankIDClientImpl
 import se.swedenconnect.bankid.rpapi.service.impl.ZxingQRGenerator

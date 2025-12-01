@@ -7,7 +7,6 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import se.gredor.backend.config.AuthConfig
 import java.time.Duration
 import java.time.Instant
 import java.util.*

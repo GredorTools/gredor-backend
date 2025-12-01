@@ -25,6 +25,9 @@ import se.gredor.backend.rest.v1.util.createErrorResponse
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
 class SubmissionFlowResource {
+    
+    private val ERROR_TEXT_PERSNR_REQUIRED = "Personal number is required"
+
     @Inject
     internal lateinit var logger: Logger
 
@@ -115,5 +118,3 @@ class SubmissionFlowResource {
         return createTechnicalErrorResponse()
     }
 }
-
-private const val ERROR_TEXT_PERSNR_REQUIRED = "Personal number is required"

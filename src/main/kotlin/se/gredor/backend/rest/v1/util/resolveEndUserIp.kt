@@ -1,7 +1,7 @@
 package se.gredor.backend.rest.v1.util
 
 import io.vertx.ext.web.RoutingContext
-import se.gredor.backend.config.RestConfig
+import se.gredor.backend.rest.RestConfig
 
 /**
  * Returnerar användarens IP-adress.
