@@ -6,6 +6,8 @@ import io.quarkus.test.junit.QuarkusTest
 import jakarta.inject.Inject
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertInstanceOf
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.api.InformationApi
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Grunduppgifter
@@ -25,7 +27,7 @@ class BolagsverketServiceImplTest {
     private val mockEmail = "test@example.com"
 
     @Inject
-    lateinit var service: BolagsverketService
+    lateinit var bolagsverketService: BolagsverketService
 
     @InjectMock(convertScopes = true)
     @RestClient
@@ -38,6 +40,11 @@ class BolagsverketServiceImplTest {
     @InjectMock(convertScopes = true)
     @RestClient
     lateinit var kontrollApi: KontrollApi
+
+    @BeforeEach
+    fun setup() {
+        assertInstanceOf(BolagsverketServiceImpl::class.java, bolagsverketService)
+    }
 
     @Test
     fun getRecords_returnsDataFromApi() {
@@ -52,7 +59,7 @@ class BolagsverketServiceImplTest {
             .rakenskapsperioder(periods)
 
         // Kör och verifiera
-        val resp = service.getRecords(mockOrgnr)
+        val resp = bolagsverketService.getRecords(mockOrgnr)
 
         assertEquals(mockOrgnamn, resp.foretagsnamn)
         assertEquals(periods, resp.rakenskapsperioder)
@@ -69,7 +76,7 @@ class BolagsverketServiceImplTest {
             .avtalstextAndrad(avtalstextAndrad)
 
         // Kör och verifiera
-        val resp = service.prepareSubmission(mockPnr, mockOrgnr)
+        val resp = bolagsverketService.prepareSubmission(mockPnr, mockOrgnr)
         assertEquals("Text", resp.avtalstext)
         assertEquals(avtalstextAndrad, resp.avtalstextAndrad)
     }
@@ -89,7 +96,7 @@ class BolagsverketServiceImplTest {
         )
 
         // Kör och verifiera
-        val resp = service.validateSubmission(mockPnr, mockOrgnr, getIxbrl())
+        val resp = bolagsverketService.validateSubmission(mockPnr, mockOrgnr, getIxbrl())
         assertEquals(mockOrgnr, resp.orgnr)
         assertEquals(2, resp.utfall.size)
         assertEquals("1337", resp.utfall.get(0).kod)
@@ -121,7 +128,7 @@ class BolagsverketServiceImplTest {
             )
 
         // Kör och verifiera
-        val resp = service.submitSubmission(mockPnr, mockOrgnr, getIxbrl(), mockEmail)
+        val resp = bolagsverketService.submitSubmission(mockPnr, mockOrgnr, getIxbrl(), mockEmail)
         assertEquals(mockOrgnr, resp.orgnr)
         assertEquals(mockPnr, resp.avsandare)
         assertEquals(mockPnr, resp.undertecknare)
