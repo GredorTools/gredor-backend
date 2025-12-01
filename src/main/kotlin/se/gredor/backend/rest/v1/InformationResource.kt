@@ -1,6 +1,7 @@
 package se.gredor.backend.rest.v1
 
 import jakarta.inject.Inject
+import jakarta.validation.constraints.Pattern
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
@@ -17,7 +18,7 @@ class InformationResource {
     @GET
     @Path("records/{orgnr}")
     @Produces(MediaType.APPLICATION_JSON)
-    fun records(@PathParam("orgnr") orgnr: String): BolagsverketRecordsResponse {
+    fun records(@PathParam("orgnr") @Pattern(regexp = "^\\d{10}$") orgnr: String): BolagsverketRecordsResponse {
         return bolagsverketService.getRecords(orgnr)
     }
 }
