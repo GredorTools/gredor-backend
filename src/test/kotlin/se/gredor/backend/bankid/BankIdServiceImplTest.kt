@@ -8,6 +8,7 @@ import io.quarkus.test.junit.QuarkusTest
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import reactor.core.publisher.Mono
 import se.gredor.backend.auth.AuthService
@@ -17,6 +18,7 @@ import se.swedenconnect.bankid.rpapi.types.CollectResponse
 import se.swedenconnect.bankid.rpapi.types.CollectResponse.Status
 import se.swedenconnect.bankid.rpapi.types.CompletionData
 import se.swedenconnect.bankid.rpapi.types.OrderResponse
+import java.time.Duration
 import java.time.Instant
 import java.util.*
 
@@ -31,10 +33,10 @@ class BankIdServiceImplTest {
     private val mockStartSecret = "mockStartSecret"
 
     @Inject
-    lateinit var svc: BankIdService
+    lateinit var bankIdService: BankIdService
 
     @Inject
-    lateinit var repo: BankIdOrderRepository
+    lateinit var bankIdOrderRepository: BankIdOrderRepository
 
     @InjectMock
     lateinit var bankIdClient: BankIDClient
@@ -42,27 +44,34 @@ class BankIdServiceImplTest {
     @InjectMock
     lateinit var authService: AuthService
 
+    @BeforeEach
+    @Transactional
+    fun setup() {
+        assertInstanceOf(BankIdServiceImpl::class.java, bankIdService)
+        bankIdOrderRepository.deleteAll()
+    }
+
     @Test
     fun authInit_blankParams_throw() {
         assertThrows(IllegalArgumentException::class.java) {
-            svc.authInit("", mockIp)
+            bankIdService.authInit("", mockIp)
         }
         assertThrows(IllegalArgumentException::class.java) {
-            svc.authInit(mockPnr, "")
+            bankIdService.authInit(mockPnr, "")
         }
     }
 
     @Test
     fun authStatus_blankOrderRef_throw() {
         assertThrows(IllegalArgumentException::class.java) {
-            svc.authStatus("")
+            bankIdService.authStatus("")
         }
     }
 
     @Test
     fun cancel_blankOrderRef_throw() {
         assertThrows(IllegalArgumentException::class.java) {
-            svc.cancel("")
+            bankIdService.cancel("")
         }
     }
 
@@ -85,7 +94,7 @@ class BankIdServiceImplTest {
         every { bankIdClient.authenticate(any()) } returns Mono.just(orderResponse)
 
         // Kör och verifiera
-        val resp = svc.authInit(mockPnr, mockIp)
+        val resp = bankIdService.authInit(mockPnr, mockIp)
 
         assertEquals(BankIdStatus.PENDING, resp.status)
         assertEquals(mockOrderRef, resp.orderRef)
@@ -93,7 +102,7 @@ class BankIdServiceImplTest {
         assertEquals("data:qr", resp.statusPendingData?.qrCodeImageBase64)
         assertNull(resp.statusPendingData?.hintCode)
 
-        val stored = repo.findByOrderRef(mockOrderRef)
+        val stored = bankIdOrderRepository.findByOrderRef(mockOrderRef)
         assertEquals(mockOrderRef, stored.orderRef)
         assertEquals(mockPnr, stored.personalNumber)
         assertEquals(mockStartToken, stored.qrStartToken)
@@ -131,7 +140,7 @@ class BankIdServiceImplTest {
         every { bankIdClient.collect(mockOrderRef) } returns Mono.just(collect)
 
         // Kör och verifiera
-        val resp = svc.authStatus(mockOrderRef)
+        val resp = bankIdService.authStatus(mockOrderRef)
         assertEquals(BankIdStatus.PENDING, resp.status)
         assertEquals("data:qr", resp.statusPendingData?.qrCodeImageBase64)
         assertEquals("mockHintCode", resp.statusPendingData?.hintCode)
@@ -146,7 +155,7 @@ class BankIdServiceImplTest {
         every { bankIdClient.collect(mockOrderRef) } returns Mono.just(collect)
 
         // Kör och verifiera
-        val resp = svc.authStatus(mockOrderRef)
+        val resp = bankIdService.authStatus(mockOrderRef)
         assertEquals(BankIdStatus.FAILED, resp.status)
         assertEquals("CANCELLED", resp.statusFailedData?.hintCode)
     }
@@ -176,13 +185,13 @@ class BankIdServiceImplTest {
         every { authService.createToken(mockPnr) } returns "mockToken"
 
         // Kör och verifiera
-        val resp = svc.authStatus(mockOrderRef)
+        val resp = bankIdService.authStatus(mockOrderRef)
 
         assertEquals(BankIdStatus.COMPLETE, resp.status)
         assertEquals(mockPnr, resp.statusCompleteData?.personalNumber)
         assertEquals("mockToken", resp.statusCompleteData?.token)
 
-        assertNull(repo.findByOrderRef(mockOrderRef))
+        assertNull(bankIdOrderRepository.findByOrderRef(mockOrderRef))
     }
 
     @Test
@@ -191,7 +200,45 @@ class BankIdServiceImplTest {
         every { bankIdClient.cancel(any()) } returns Mono.empty()
 
         // Kör och verifiera
-        assertDoesNotThrow { svc.cancel(mockOrderRef) }
+        assertDoesNotThrow { bankIdService.cancel(mockOrderRef) }
         verify { bankIdClient.cancel(mockOrderRef) }
+    }
+
+    @Test
+    @Transactional
+    fun cleanOldOrders_deletesOlderThanOneHour() {
+        // Skapa en BankIdOrderEntity i databasen som är äldre än en timme och kolla att den tas bort
+        val entToBeDeleted = BankIdOrderEntity(
+            orderRef = mockOrderRef,
+            personalNumber = mockPnr,
+            endUserIp = mockIp,
+            qrStartToken = mockStartToken,
+            qrStartSecret = mockStartSecret,
+            orderTime = Instant.now().minus(Duration.ofMinutes(65)).toEpochMilli()
+        )
+        entToBeDeleted.persist()
+
+        assertEquals(1, bankIdOrderRepository.count())
+        (bankIdService as BankIdServiceImpl).cleanOldOrders()
+        assertEquals(0, bankIdOrderRepository.count())
+    }
+
+    @Test
+    @Transactional
+    fun cleanOldOrders_keepsNewerThanOneHour() {
+        // Skapa en BankIdOrderEntity i databasen som INTE är äldre än en timme och kolla att den INTE tas bort
+        val entToBeKept = BankIdOrderEntity(
+            orderRef = mockOrderRef,
+            personalNumber = mockPnr,
+            endUserIp = mockIp,
+            qrStartToken = mockStartToken,
+            qrStartSecret = mockStartSecret,
+            orderTime = Instant.now().minus(Duration.ofMinutes(55)).toEpochMilli()
+        )
+        entToBeKept.persist()
+
+        assertEquals(1, bankIdOrderRepository.count())
+        (bankIdService as BankIdServiceImpl).cleanOldOrders()
+        assertEquals(1, bankIdOrderRepository.count())
     }
 }
