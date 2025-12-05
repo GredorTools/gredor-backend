@@ -3,7 +3,6 @@ package se.gredor.backend.bankid
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.inject.Produces
 import jakarta.inject.Inject
-import org.springframework.context.annotation.Bean
 import org.springframework.core.io.Resource
 import org.springframework.web.reactive.function.client.WebClient
 import se.swedenconnect.bankid.rpapi.service.BankIDClient
@@ -30,8 +29,7 @@ class BankIdClientProducer {
         )
     }
 
-    @Bean
-    fun bankIdWebClientFactory(): WebClient {
+    private fun bankIdWebClientFactory(): WebClient {
         val keyStore = KeyStore.getInstance("PKCS12")
         FileInputStream(this.bankIdConfig.certPath()).use { keyStoreData ->
             keyStore.load(
