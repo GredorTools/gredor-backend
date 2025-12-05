@@ -3,6 +3,7 @@ package se.gredor.backend.rest.v1
 import GeneralExceptionMapper.Companion.createTechnicalErrorResponse
 import jakarta.inject.Inject
 import jakarta.validation.Valid
+import jakarta.validation.constraints.NotNull
 import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
@@ -19,14 +20,11 @@ import se.gredor.backend.bolagsverket.BolagsverketService
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketSubmissionRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationRequest
-import se.gredor.backend.rest.v1.util.createErrorResponse
 
 
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
 class SubmissionFlowResource {
-    
-    private val ERROR_TEXT_PERSNR_REQUIRED = "Personal number is required"
 
     @Inject
     internal lateinit var logger: Logger
@@ -40,15 +38,10 @@ class SubmissionFlowResource {
     @Produces(MediaType.APPLICATION_JSON)
     fun prepare(
         @Valid preparationRequest: BolagsverketPreparationRequest,
-        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+        @NotNull @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String
     ): BolagsverketPreparationResponse {
         return bolagsverketService.prepareSubmission(
-            personalNumber ?: throw BadRequestException(
-                createErrorResponse(
-                    Response.Status.BAD_REQUEST,
-                    ERROR_TEXT_PERSNR_REQUIRED
-                )
-            ),
+            personalNumber,
             preparationRequest.foretagOrgnr
         )
     }
@@ -59,15 +52,10 @@ class SubmissionFlowResource {
     @Produces(MediaType.APPLICATION_JSON)
     fun validate(
         @Valid validationRequest: BolagsverketValidationRequest,
-        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+        @NotNull @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String
     ): KontrolleraSvar {
         return bolagsverketService.validateSubmission(
-            personalNumber ?: throw BadRequestException(
-                createErrorResponse(
-                    Response.Status.BAD_REQUEST,
-                    ERROR_TEXT_PERSNR_REQUIRED
-                )
-            ),
+            personalNumber,
             validationRequest.foretagOrgnr,
             validationRequest.ixbrl
         )
@@ -79,15 +67,10 @@ class SubmissionFlowResource {
     @Produces(MediaType.APPLICATION_JSON)
     fun submit(
         @Valid submissionRequest: BolagsverketSubmissionRequest,
-        @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String?
+        @NotNull @CookieParam(PERSONAL_NUMBER_COOKIE_NAME) personalNumber: String
     ): InlamningOK {
         return bolagsverketService.submitSubmission(
-            personalNumber ?: throw BadRequestException(
-                createErrorResponse(
-                    Response.Status.BAD_REQUEST,
-                    ERROR_TEXT_PERSNR_REQUIRED
-                )
-            ),
+            personalNumber,
             submissionRequest.foretagOrgnr,
             submissionRequest.ixbrl,
             submissionRequest.aviseringEpost
