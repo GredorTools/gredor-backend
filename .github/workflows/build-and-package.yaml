@@ -45,10 +45,18 @@ jobs:
           images: ${{ env.IMAGE_REF }}
 
       - name: Tag image
-        run: docker tag ${{ env.IMAGE_REF }} ${{ steps.meta.outputs.tags }}
+        run: docker tag ${{ env.IMAGE_REF }} ${{ env.IMAGE_REF }}:${{ steps.meta.outputs.version }}
+
+      - name: Tag image (latest)
+        if: ${{ contains(steps.meta.outputs.tags, 'latest') }}
+        run: docker tag ${{ env.IMAGE_REF }} ${{ env.IMAGE_REF }}:latest
 
       - name: Push to registry
-        run: docker push ${{ steps.meta.outputs.tags }}
+        run: docker push ${{ env.IMAGE_REF }}:${{ steps.meta.outputs.version }}
+
+      - name: Push to registry (latest)
+        if: ${{ contains(steps.meta.outputs.tags, 'latest') }}
+        run: docker push ${{ env.IMAGE_REF }}:latest
 
       - name: Get image digest
         run: |
