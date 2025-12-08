@@ -27,7 +27,12 @@ class AuthFilter : ContainerRequestFilter {
         val token = cookies[TOKEN_COOKIE_NAME]?.value
 
         if (token == null || personalNumber == null) {
-            requestContext.abortWith(createErrorResponse(Status.UNAUTHORIZED, "Missing required cookies"))
+            requestContext.abortWith(
+                createErrorResponse(
+                    Status.UNAUTHORIZED,
+                    "Inloggning saknas. Ladda om sidan och försök igen."
+                )
+            )
             return
         }
 
@@ -39,7 +44,12 @@ class AuthFilter : ContainerRequestFilter {
         }
 
         if (!isValid) {
-            requestContext.abortWith(createErrorResponse(Status.UNAUTHORIZED, "Invalid authentication token"))
+            requestContext.abortWith(
+                createErrorResponse(
+                    Status.UNAUTHORIZED,
+                    "Ogiltig inloggning. Ladda om sidan och försök igen."
+                )
+            )
         }
     }
 

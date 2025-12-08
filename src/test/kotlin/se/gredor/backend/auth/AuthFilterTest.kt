@@ -9,6 +9,7 @@ import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -29,7 +30,7 @@ class AuthFilterTest {
             .post("/test-rest-controller/auth-filter/test-post")
             .then()
             .statusCode(401)
-            .body("error", equalTo("Missing required cookies"))
+            .body(containsString("Inloggning saknas"))
     }
 
     @Test
@@ -47,7 +48,7 @@ class AuthFilterTest {
             .post("/test-rest-controller/auth-filter/test-post")
             .then()
             .statusCode(401)
-            .body("error", equalTo("Invalid authentication token"))
+            .body(containsString("Ogiltig inloggning"))
     }
 
     @Test

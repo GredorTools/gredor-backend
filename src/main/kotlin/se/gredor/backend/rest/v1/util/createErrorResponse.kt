@@ -7,6 +7,6 @@ import jakarta.ws.rs.core.Response
  * Skapar ett REST-svar med felmeddelande.
  */
 fun createErrorResponse(status: Response.Status, message: String): Response? = Response.status(status)
-    .entity(mapOf("error" to message))
-    .type(MediaType.APPLICATION_JSON)
+    .entity(message)
+    .type(MediaType.TEXT_PLAIN)
     .build()
