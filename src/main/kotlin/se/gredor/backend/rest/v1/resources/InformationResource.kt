@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import jakarta.inject.Inject
 import jakarta.validation.constraints.Pattern
@@ -9,8 +9,11 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import se.gredor.backend.bolagsverket.BolagsverketRecordsResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
+import se.gredor.backend.rest.v1.config.PerResourceString
+import se.gredor.backend.rest.v1.filter.GredorRestResource
 
 @Path("/v1/information/")
+@GredorRestResource(PerResourceString.INFORMATION)
 class InformationResource {
     @Inject
     private lateinit var bolagsverketService: BolagsverketService

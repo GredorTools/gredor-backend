@@ -1,7 +1,9 @@
 quarkus:
   # Ladda in konfiguration med secrets
   config:
-    locations: file:${GREDOR_SECRETS_CONFIG_PATH}  # Ska vara en yaml-fil
+    locations:
+      - file:${GREDOR_EXTRA_CONFIG_PATH}  # Ska vara en yaml-fil
+      - file:${GREDOR_SECRETS_CONFIG_PATH}  # Ska vara en yaml-fil
   # Autentisering mot andra API:er
   tls:
     bolagsverket:
@@ -17,4 +19,5 @@ quarkus:
 
 gredor:
   rest:
-    use-x-real-ip: ${GREDOR_USE_X_REAL_IP}
+    v1:
+      use-x-real-ip: ${GREDOR_USE_X_REAL_IP}

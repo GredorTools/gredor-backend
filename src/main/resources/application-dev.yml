@@ -20,4 +20,5 @@ gredor:
     lamna-in-arsredovisning:
       baseurl: unused
   rest:
-    use-x-real-ip: false
+    v1:
+      use-x-real-ip: false

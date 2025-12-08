@@ -41,11 +41,23 @@ När backenden sedan körs måste följande miljövariabler vara satta:
 ```
 QUARKUS_PROFILE=<normalt "acc" eller "prod" beorende på miljötyp>
 GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
-GREDOR_SECRETS_CONFIG_PATH=<path till din gredor-secrets.yaml (se nedan)>
+GREDOR_EXTRA_CONFIG_PATH=<path till din gredor-config.yml (se nedan)>
+GREDOR_SECRETS_CONFIG_PATH=<path till din gredor-secrets.yml (se nedan)>
 GREDOR_USE_X_REAL_IP=<"true" eller "false" beroende på om du har en proxy som skickar headern X-Real-IP framför Gredor>
 ```
 
-Format på gredor-secrets.yaml:
+gredor-config.yaml kan vara tom eller innehålla konfiguration kompatibel med
+`application.yml`. Exempel på innehåll:
+
+```yaml
+gredor:
+  rest:
+    v1:
+      messages:
+        - text: "Ett meddelande för att informera om t.ex. en driftstörning."
+```
+
+Format på gredor-secrets.yml:
 
 ```yaml
 gredor:

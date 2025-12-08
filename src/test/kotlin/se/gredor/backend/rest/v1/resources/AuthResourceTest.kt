@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.mockk.every
 import io.quarkiverse.test.junit.mockk.InjectMock
@@ -84,7 +84,7 @@ class AuthResourceTest {
 
         // Mocka
         every { authService.verifyToken(mockPnr, token) } returns true
-        
+
         // Kör och verifiera
         val requestJson = """{"personalNumber":"$mockPnr"}"""
         given()

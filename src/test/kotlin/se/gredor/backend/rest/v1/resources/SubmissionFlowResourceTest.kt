@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.mockk.every
 import io.quarkiverse.test.junit.mockk.InjectMock
@@ -16,6 +16,7 @@ import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.KontrolleraSvar
 import se.gredor.backend.auth.AuthService
 import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
+import java.time.LocalDate
 import java.util.*
 
 @QuarkusTest
@@ -40,7 +41,7 @@ class SubmissionFlowResourceTest {
         every { bolagsverketService.prepareSubmission(mockPnr, mockOrgnr) } returns
                 BolagsverketPreparationResponse(
                     avtalstext = "mockAvtalstext",
-                    avtalstextAndrad = java.time.LocalDate.of(2024, 1, 1)
+                    avtalstextAndrad = LocalDate.of(2024, 1, 1)
                 )
 
         // Kör och verifiera

@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import GeneralExceptionMapper.Companion.createTechnicalErrorResponse
 import jakarta.inject.Inject
@@ -17,13 +17,15 @@ import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthenticationRequired
 import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
+import se.gredor.backend.rest.v1.config.PerResourceString
+import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketSubmissionRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationRequest
 
-
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
+@GredorRestResource(PerResourceString.SUBMISSION_FLOW)
 class SubmissionFlowResource {
 
     @Inject

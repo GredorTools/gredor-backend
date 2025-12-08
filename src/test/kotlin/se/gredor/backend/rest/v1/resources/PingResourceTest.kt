@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given

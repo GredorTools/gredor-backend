@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.mockk.every
 import io.quarkiverse.test.junit.mockk.InjectMock
@@ -51,7 +51,7 @@ class BankIdResourceTest {
     }
 
     @Test
-    fun init_aboveAuthLimit_returns400() {
+    fun init_aboveAuthLimit_returns429() {
         // Mocka
         every { authService.isWithinAuthLimit(mockPnr) } returns false
 
@@ -62,8 +62,8 @@ class BankIdResourceTest {
             .body(requestJson)
             .post("/v1/bankid/init")
             .then()
-            .statusCode(400)
-            .body("error", containsString("Too many authentications"))
+            .statusCode(429)
+            .body(containsString("För många legitimeringar"))
     }
 
     @Test

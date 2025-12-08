@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.quarkus.security.UnauthorizedException
 import jakarta.inject.Inject
@@ -11,10 +11,13 @@ import jakarta.ws.rs.core.MediaType
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthConsts.TOKEN_COOKIE_NAME
 import se.gredor.backend.auth.AuthService
+import se.gredor.backend.rest.v1.config.PerResourceString
+import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.auth.AuthStatusRequest
 import se.gredor.backend.rest.v1.model.auth.AuthStatusResponse
 
 @Path("/v1/auth/")
+@GredorRestResource(PerResourceString.AUTH)
 class AuthResource {
     @Inject
     private lateinit var authService: AuthService

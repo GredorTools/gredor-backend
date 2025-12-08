@@ -1,4 +1,4 @@
-package se.gredor.backend.rest.v1
+package se.gredor.backend.rest.v1.resources
 
 import io.vertx.core.http.Cookie.cookie
 import io.vertx.core.http.CookieSameSite
@@ -17,7 +17,9 @@ import se.gredor.backend.auth.AuthService
 import se.gredor.backend.bankid.BankIdService
 import se.gredor.backend.bankid.BankIdStatus
 import se.gredor.backend.bankid.BankIdStatusResponse
-import se.gredor.backend.rest.RestConfig
+import se.gredor.backend.rest.v1.config.PerResourceString
+import se.gredor.backend.rest.v1.config.RestConfig
+import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.bankid.BankIdCancelRequest
 import se.gredor.backend.rest.v1.model.bankid.BankIdInitRequest
 import se.gredor.backend.rest.v1.model.bankid.BankIdStatusRequest
@@ -25,9 +27,10 @@ import se.gredor.backend.rest.v1.util.createErrorResponse
 import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
 @Path("/v1/bankid/")
+@GredorRestResource(PerResourceString.BANK_ID)
 class BankIdResource {
 
-    private val ERROR_TEXT_INVALID_PARAMETERS = "Invalid parameters"
+    private val ERROR_TEXT_INVALID_PARAMETERS = "Ogiltiga parametrar."
 
     @Inject
     internal lateinit var logger: Logger
@@ -50,8 +53,8 @@ class BankIdResource {
             // Begränsa antal legitimeringar
             if (!authService.isWithinAuthLimit(request.personalNumber)) {
                 logger.warn("BankID authentication prevented due to too many authentications")
-                throw BadRequestException(
-                    createErrorResponse(Status.BAD_REQUEST, "Too many authentications")
+                throw WebApplicationException(
+                    createErrorResponse(Status.TOO_MANY_REQUESTS, "För många legitimeringar. Försök igen senare.")
                 )
             }
 
