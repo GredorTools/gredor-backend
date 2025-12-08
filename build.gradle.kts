@@ -33,20 +33,20 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
 
+    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.13.0")
+    implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
+
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.83")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.20.1")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.20.1")
+    implementation("se.swedenconnect.bankid:bankid-rp-api:1.2.5")
+    implementation("com.google.zxing:core:3.5.4")
+    implementation("com.google.zxing:javase:3.5.4")
+
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:3.1.0")
     testImplementation("io.rest-assured:rest-assured")
     testImplementation("io.quarkus:quarkus-jacoco")
-
-    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.11.0")
-    implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
-
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.81")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.19.1")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.19.1")
-    implementation("se.swedenconnect.bankid:bankid-rp-api:1.2.4")
-    implementation("com.google.zxing:core:3.5.3")
-    implementation("com.google.zxing:javase:3.5.3")
 }
 
 group = "se.gredor.backend"
