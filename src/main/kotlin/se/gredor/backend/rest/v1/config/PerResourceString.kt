@@ -8,6 +8,7 @@ enum class PerResourceString(
     AUTH(RestConfig.PerResourceStrings::auth),
     BANK_ID(RestConfig.PerResourceStrings::bankId),
     INFORMATION(RestConfig.PerResourceStrings::information),
+    MESSAGE(RestConfig.PerResourceStrings::message),
     PING(RestConfig.PerResourceStrings::ping),
     SUBMISSION_FLOW(RestConfig.PerResourceStrings::submissionFlow)
 }

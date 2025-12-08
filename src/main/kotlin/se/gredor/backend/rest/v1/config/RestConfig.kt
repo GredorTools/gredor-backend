@@ -10,6 +10,9 @@ interface RestConfig {
     @WithName("use-x-real-ip")
     fun useXRealIp(): Boolean
 
+    @WithName("messages")
+    fun messages(): Optional<List<Message>>
+
     @WithName("closed-resources")
     fun closedResources(): Optional<PerResourceStrings>
 
@@ -23,11 +26,19 @@ interface RestConfig {
         @WithName("information")
         fun information(): Optional<String>
 
+        @WithName("message")
+        fun message(): Optional<String>
+
         @WithName("ping")
         fun ping(): Optional<String>
 
         @WithName("submission-flow")
         fun submissionFlow(): Optional<String>
+    }
+
+    fun interface Message {
+        @WithName("text")
+        fun text(): String
     }
 
 }
