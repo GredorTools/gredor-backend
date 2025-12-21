@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.2.21"
-    kotlin("plugin.allopen") version "2.2.21"
-    kotlin("plugin.jpa") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
+    kotlin("plugin.allopen") version "2.3.0"
+    kotlin("plugin.jpa") version "2.3.0"
     id("io.quarkus")
-    id("dev.drewhamilton.poko") version "0.20.1"
+    id("dev.drewhamilton.poko") version "0.20.2"
     id("jacoco")
 }
 
@@ -53,8 +53,8 @@ group = "se.gredor.backend"
 version = "1.0.1"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.withType<Test> {
@@ -69,7 +69,7 @@ allOpen {
 
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
         javaParameters = true
     }
 }
