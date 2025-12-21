@@ -5,11 +5,12 @@ import io.quarkiverse.test.junit.mockk.InjectMock
 import io.quarkus.test.junit.QuarkusTest
 import jakarta.inject.Inject
 import org.eclipse.microprofile.rest.client.inject.RestClient
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertInstanceOf
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.api.InformationApi
+import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Foretradare
+import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Funktion
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Grunduppgifter
 import org.openapi.quarkus.hamtaArsredovisningsinformation_1_4_yaml.model.Rakenskapsperiod
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.api.InlamningApi
@@ -47,7 +48,41 @@ class BolagsverketServiceImplTest {
     }
 
     @Test
-    fun getRecords_returnsDataFromApi() {
+    fun getRecords_returnsDataFromApi_givenNoVDOrLikvidator() {
+        val periods = listOf(
+            Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
+        )
+
+        // Mocka
+        every { informationApi.grunduppgifter(any(), mockOrgnr) } returns Grunduppgifter()
+            .namn(mockOrgnamn)
+            .rakenskapsperioder(periods)
+            .foretradare(
+                listOf(
+                    Foretradare().fornamn("Test").namn("Testsson").personnummer(mockPnr).funktioner(
+                        listOf(
+                            Funktion().kod("LE").text("styrelseledamot"),
+                        )
+                    ),
+                    Foretradare().fornamn("Annan").namn("Annansson").annanIdentitet("1234567890").funktioner(
+                        listOf(
+                            Funktion().kod("SU").text("styrelsesuppleant"),
+                        )
+                    )
+                )
+            )
+
+        // Kör och verifiera
+        val resp = bolagsverketService.getRecords(mockOrgnr)
+
+        assertEquals(mockOrgnamn, resp.foretagsnamn)
+        assertEquals(periods, resp.rakenskapsperioder)
+        assertFalse(resp.harVerkstallandeDirektor)
+        assertFalse(resp.harLikvidator)
+    }
+
+    @Test
+    fun getRecords_returnsDataFromApi_givenHasVD() {
         val periods = listOf(
             Rakenskapsperiod().from(LocalDate.of(2023, 1, 1)).tom(LocalDate.of(2023, 12, 31)),
             Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
@@ -57,12 +92,61 @@ class BolagsverketServiceImplTest {
         every { informationApi.grunduppgifter(any(), mockOrgnr) } returns Grunduppgifter()
             .namn(mockOrgnamn)
             .rakenskapsperioder(periods)
+            .foretradare(
+                listOf(
+                    Foretradare().fornamn("Test").namn("Testsson").personnummer(mockPnr).funktioner(
+                        listOf(
+                            Funktion().kod("LE").text("styrelseledamot"),
+                            Funktion().kod("VD").text("verkställande direktör")
+                        )
+                    ),
+                    Foretradare().fornamn("Annan").namn("Annansson").annanIdentitet("1234567890").funktioner(
+                        listOf(
+                            Funktion().kod("SU").text("styrelsesuppleant")
+                        )
+                    )
+                )
+            )
 
         // Kör och verifiera
         val resp = bolagsverketService.getRecords(mockOrgnr)
 
         assertEquals(mockOrgnamn, resp.foretagsnamn)
         assertEquals(periods, resp.rakenskapsperioder)
+        assertTrue(resp.harVerkstallandeDirektor)
+        assertFalse(resp.harLikvidator)
+    }
+
+    @Test
+    fun getRecords_returnsDataFromApi_givenHasLikvidator() {
+        val periods = listOf(
+            Rakenskapsperiod().from(LocalDate.of(2021, 1, 1)).tom(LocalDate.of(2021, 12, 31)),
+            Rakenskapsperiod().from(LocalDate.of(2022, 1, 1)).tom(LocalDate.of(2022, 12, 31)),
+            Rakenskapsperiod().from(LocalDate.of(2023, 1, 1)).tom(LocalDate.of(2023, 12, 31)),
+            Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
+        )
+
+        // Mocka
+        every { informationApi.grunduppgifter(any(), mockOrgnr) } returns Grunduppgifter()
+            .namn(mockOrgnamn)
+            .rakenskapsperioder(periods)
+            .foretradare(
+                listOf(
+                    Foretradare().fornamn("Ludvig").namn("Likvidator").personnummer(mockPnr).funktioner(
+                        listOf(
+                            Funktion().kod("LI").text("likvidator")
+                        )
+                    )
+                )
+            )
+
+        // Kör och verifiera
+        val resp = bolagsverketService.getRecords(mockOrgnr)
+
+        assertEquals(mockOrgnamn, resp.foretagsnamn)
+        assertEquals(periods, resp.rakenskapsperioder)
+        assertFalse(resp.harVerkstallandeDirektor)
+        assertTrue(resp.harLikvidator)
     }
 
     @Test
