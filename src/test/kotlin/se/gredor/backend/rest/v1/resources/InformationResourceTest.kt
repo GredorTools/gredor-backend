@@ -32,7 +32,12 @@ class InformationResourceTest {
 
         // Mocka
         every { bolagsverketService.getRecords(mockOrgnr) } returns
-                BolagsverketRecordsResponse(foretagsnamn = "Exempelbolaget AB", rakenskapsperioder = periods)
+                BolagsverketRecordsResponse(
+                    foretagsnamn = "Exempelbolaget AB",
+                    rakenskapsperioder = periods,
+                    harVerkstallandeDirektor = true,
+                    harLikvidator = false,
+                )
 
         // Kör och verifiera
         given()
@@ -42,5 +47,7 @@ class InformationResourceTest {
             .statusCode(200)
             .body("foretagsnamn", equalTo("Exempelbolaget AB"))
             .body("rakenskapsperioder.size()", equalTo(2))
+            .body("harVerkstallandeDirektor", equalTo(true))
+            .body("harLikvidator", equalTo(false))
     }
 }

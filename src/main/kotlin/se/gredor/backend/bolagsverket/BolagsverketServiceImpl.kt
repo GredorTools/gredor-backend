@@ -37,7 +37,20 @@ class BolagsverketServiceImpl : BolagsverketService {
 
         return BolagsverketRecordsResponse(
             foretagsnamn = grunduppgifter.namn,
-            rakenskapsperioder = grunduppgifter.rakenskapsperioder
+            rakenskapsperioder = grunduppgifter.rakenskapsperioder,
+            harVerkstallandeDirektor = grunduppgifter.foretradare.any { foretradare ->
+                foretradare.funktioner.any { funktion ->
+                    funktion.kod in setOf(
+                        "VD", // Verkställande direktör
+                        "EVD", // Extern verkställande direktör
+                    )
+                }
+            },
+            harLikvidator = grunduppgifter.foretradare.any { foretradare ->
+                foretradare.funktioner.any { funktion ->
+                    funktion.kod == "LI" // Likvidator
+                }
+            }
         )
     }
 

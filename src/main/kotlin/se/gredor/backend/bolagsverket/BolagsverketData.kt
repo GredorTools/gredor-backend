@@ -10,5 +10,7 @@ data class BolagsverketPreparationResponse(
 
 data class BolagsverketRecordsResponse(
     val foretagsnamn: String,
-    val rakenskapsperioder: List<Rakenskapsperiod>
+    val rakenskapsperioder: List<Rakenskapsperiod>,
+    val harVerkstallandeDirektor: Boolean,
+    val harLikvidator: Boolean,
 )

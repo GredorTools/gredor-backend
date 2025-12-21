@@ -21,7 +21,9 @@ class BolagsverketServiceMock : BolagsverketService {
                 Rakenskapsperiod().from(LocalDate.of(2022, 1, 1)).tom(LocalDate.of(2022, 12, 31)),
                 Rakenskapsperiod().from(LocalDate.of(2023, 1, 1)).tom(LocalDate.of(2023, 12, 31)),
                 Rakenskapsperiod().from(LocalDate.of(2024, 1, 1)).tom(LocalDate.of(2024, 12, 31)),
-            )
+            ),
+            harVerkstallandeDirektor = false,
+            harLikvidator = true
         )
     }
 
