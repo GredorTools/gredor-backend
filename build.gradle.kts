@@ -43,7 +43,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.google.zxing:javase:3.5.4")
 
-    testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.quarkus:quarkus-junit")
     testImplementation("io.quarkiverse.mockk:quarkus-junit5-mockk:3.1.0")
     testImplementation("io.rest-assured:rest-assured")
     testImplementation("io.quarkus:quarkus-jacoco")
