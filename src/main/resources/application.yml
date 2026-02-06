@@ -45,6 +45,7 @@ quarkus:
     name: gredor-backend
     tag: latest
   jib:
+    base-jvm-image: registry.access.redhat.com/ubi9/openjdk-25-runtime:1.24
     ports: 8080
 
 gredor:
