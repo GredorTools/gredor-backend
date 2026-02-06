@@ -1,3 +1,5 @@
+package se.gredor.backend.exceptions
+
 import MdcRequestFilter.Companion.getRequestId
 import io.quarkus.logging.Log
 import jakarta.ws.rs.Priorities
@@ -12,7 +14,7 @@ class GeneralExceptionMapper {
     @ServerExceptionMapper(priority = Priorities.USER + 2)
     fun mapException(exception: Throwable): Response {
         Log.error(exception.message, exception)
-        
+
         return if (exception is WebApplicationException) {
             // WebApplicationException = troligtvis klientens fel, hantera som vanligt
             exception.response

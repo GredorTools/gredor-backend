@@ -1,6 +1,5 @@
 package se.gredor.backend.rest.v1.resources
 
-import GeneralExceptionMapper.Companion.createTechnicalErrorResponse
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
@@ -17,6 +16,7 @@ import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthenticationRequired
 import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
+import se.gredor.backend.exceptions.GeneralExceptionMapper.Companion.createTechnicalErrorResponse
 import se.gredor.backend.rest.v1.config.PerResourceString
 import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationRequest
