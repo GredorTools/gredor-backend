@@ -7,6 +7,7 @@ quarkus:
   # Autentisering mot andra API:er
   tls:
     bolagsverket:
+      protocols: TLSv1.2,TLSv1.3
       key-store:
         p12:
           path: ${gredor.secrets.cert-bolagsverket.path}  # Ska vara en PKCS#12-fil
