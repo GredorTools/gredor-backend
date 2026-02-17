@@ -3,6 +3,7 @@ package se.gredor.backend.bankid
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.inject.Produces
 import jakarta.inject.Inject
+import org.springframework.core.io.InputStreamResource
 import org.springframework.core.io.Resource
 import org.springframework.web.reactive.function.client.WebClient
 import se.swedenconnect.bankid.rpapi.service.BankIDClient
@@ -42,17 +43,30 @@ class BankIdClientProducer {
         )
 
         var webServiceUrl: String
-        var trusedRoot: Resource
+        var trustedRoot: Resource
         if (bankIdConfig.testMode()) {
             webServiceUrl = WebClientFactoryBean.TEST_WEB_SERVICE_URL
-            trusedRoot = WebClientFactoryBean.TEST_ROOT_CERTIFICATE.get()
+            trustedRoot = WebClientFactoryBean.TEST_ROOT_CERTIFICATE.get()
         } else {
             webServiceUrl = WebClientFactoryBean.PRODUCTION_WEB_SERVICE_URL
-            trusedRoot = WebClientFactoryBean.PRODUCTION_ROOT_CERTIFICATE.get()
+            trustedRoot = WebClientFactoryBean.PRODUCTION_ROOT_CERTIFICATE.get()
         }
+        trustedRoot = getFixedTrustedRootResource(trustedRoot)
 
-        val webClientFactory = WebClientFactoryBean(webServiceUrl, trusedRoot, credential)
+        val webClientFactory = WebClientFactoryBean(webServiceUrl, trustedRoot, credential)
         webClientFactory.afterPropertiesSet()
         return webClientFactory.createInstance()
+    }
+
+    /**
+     * Tar bort alla avslutande blanksteg på första raden i PEM-filen. Detta
+     * pga att Java 25 inte tillåter avslutande blanksteg på första raden.
+     * Möjligtvis en bugg, se https://bugs.openjdk.org/browse/JDK-8377975
+     */
+    private fun getFixedTrustedRootResource(originalTrustedRoot: Resource): InputStreamResource {
+        val fixedContent = originalTrustedRoot.inputStream.bufferedReader().use { reader ->
+            reader.readLines().joinToString(separator = "\n", postfix = "\n") { line -> line.trimEnd() }
+        }
+        return InputStreamResource(fixedContent.byteInputStream())
     }
 }
