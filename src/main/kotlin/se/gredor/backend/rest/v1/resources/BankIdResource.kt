@@ -44,6 +44,11 @@ class BankIdResource {
     @Inject
     private lateinit var restConfig: RestConfig
 
+    /**
+     * Initierar en BankID-autentisering för det givna personnumret.
+     * Kontrollerar att användaren inte har överskridit gränsen för antal
+     * legitimeringar innan förfrågan skickas till BankID.
+     */
     @POST
     @Path("init")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -70,6 +75,11 @@ class BankIdResource {
         }
     }
 
+    /**
+     * Hämtar status för en pågående BankID-autentisering med det givna
+     * orderRef. Om autentiseringen är slutförd sätts autentiserings-cookies så
+     * att användaren kan fortsätta i inloggat läge.
+     */
     @POST
     @Path("status")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -87,6 +97,9 @@ class BankIdResource {
         }
     }
 
+    /**
+     * Avbryter en pågående BankID-autentisering med det givna orderRef.
+     */
     @POST
     @Path("cancel")
     @Consumes(MediaType.APPLICATION_JSON)

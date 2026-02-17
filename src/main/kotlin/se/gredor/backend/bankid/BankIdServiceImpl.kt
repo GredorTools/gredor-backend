@@ -141,9 +141,15 @@ class BankIdServiceImpl : BankIdService {
             .block()
     }
 
+    /**
+     * Rensar den givna BankID-ordern från databasen.
+     */
     @Transactional
     fun cleanOrderFromDatabase(orderRef: String) = bankIdOrderRepository.deleteByOrderRef(orderRef)
 
+    /**
+     * Schemaläggning för att städa bort gamla BankID-ordrar från databasen.
+     */
     @Scheduled(cron = "0 30 * * * ?")
     @Transactional
     fun cleanOldOrders() {

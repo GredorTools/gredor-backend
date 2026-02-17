@@ -22,6 +22,10 @@ class AuthResource {
     @Inject
     private lateinit var authService: AuthService
 
+    /**
+     * Kontrollerar om användaren med det givna personnumret är inloggad genom
+     * att verifiera autentiserings-cookies.
+     */
     @POST
     @Path("status")
     @Produces(MediaType.APPLICATION_JSON)

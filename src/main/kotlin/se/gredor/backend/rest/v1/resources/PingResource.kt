@@ -10,6 +10,9 @@ import se.gredor.backend.rest.v1.filter.GredorRestResource
 @Path("/v1/ping/")
 @GredorRestResource(PerResourceString.PING)
 class PingResource {
+    /**
+     * Returnerar "pong" för att bekräfta att servern är igång.
+     */
     @GET
     @Path("ping")
     @Produces(MediaType.TEXT_PLAIN)
