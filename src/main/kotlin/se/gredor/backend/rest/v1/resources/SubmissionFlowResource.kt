@@ -34,6 +34,9 @@ class SubmissionFlowResource {
     @Inject
     private lateinit var bolagsverketService: BolagsverketService
 
+    /**
+     * Hämtar Bolagsverkets avtalstext.
+     */
     @POST
     @Path("prepare")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -48,6 +51,10 @@ class SubmissionFlowResource {
         )
     }
 
+    /**
+     * Validerar en årsredovisning (iXBRL-fil) mot Bolagsverkets
+     * valideringsregler.
+     */
     @POST
     @Path("validate")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -63,6 +70,10 @@ class SubmissionFlowResource {
         )
     }
 
+    /**
+     * Lämnar in en årsredovisning (iXBRL-fil) till Bolagsverket. Aviseringar
+     * skickas av Bolagsverket till den angivna e-postadressen.
+     */
     @POST
     @Path("submit")
     @Consumes(MediaType.APPLICATION_JSON)

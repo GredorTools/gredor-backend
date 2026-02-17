@@ -21,6 +21,9 @@ class AuthService {
     @Inject
     private lateinit var authConfig: AuthConfig
 
+    /**
+     * Skapar och sparar en ny autentiseringstoken för det givna personnumret.
+     */
     @Transactional
     fun createToken(personalNumber: String): String {
         val token = UUID.randomUUID().toString()
@@ -36,6 +39,10 @@ class AuthService {
         return token
     }
 
+    /**
+     * Verifierar att den givna autentiseringstokenen är giltig för
+     * personnumret och inte har löpt ut.
+     */
     @Transactional
     fun verifyToken(personalNumber: String, token: String): Boolean {
         val authEntity =
@@ -48,11 +55,19 @@ class AuthService {
         return true
     }
 
+    /**
+     * Kontrollerar om det givna personnumret ligger inom gränsen för tillåtna
+     * autentiseringar per tidsintervall.
+     */
     @Transactional
     fun isWithinAuthLimit(personalNumber: String) =
         authRespository.count() < authConfig.limitPerInterval() &&
                 authRespository.countByPersonalNumber(personalNumber) < authConfig.limitPerIntervalAndPerson()
 
+    /**
+     * Schemaläggning för att städa bort gamla utgånga autentiseringstokens
+     * från databasen.
+     */
     @Scheduled(cron = "0 0 * * * ?")
     @Transactional
     fun cleanOldTokens() {

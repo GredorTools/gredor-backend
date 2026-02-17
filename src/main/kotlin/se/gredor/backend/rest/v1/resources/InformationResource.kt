@@ -18,6 +18,11 @@ class InformationResource {
     @Inject
     private lateinit var bolagsverketService: BolagsverketService
 
+    /**
+     * Returnerar företagsinformation för det givna organisationsnumret,
+     * inklusive företagsnamn, senaste räkenskapsår samt huruvida bolaget har
+     * VD/likvidator.
+     */
     @GET
     @Path("records/{orgnr}")
     @Produces(MediaType.APPLICATION_JSON)

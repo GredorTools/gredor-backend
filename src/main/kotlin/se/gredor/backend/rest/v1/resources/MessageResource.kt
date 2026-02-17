@@ -17,6 +17,10 @@ class MessageResource {
     @Inject
     private lateinit var restConfig: RestConfig
 
+    /**
+     * Returnerar alla meddelanden som ska visas högst upp i
+     * användargränssnittet.
+     */
     @GET
     @Path("messages")
     @Produces(MediaType.APPLICATION_JSON)
