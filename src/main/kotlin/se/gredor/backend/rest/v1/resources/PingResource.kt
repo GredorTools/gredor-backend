@@ -1,5 +1,6 @@
 package se.gredor.backend.rest.v1.resources
 
+import io.smallrye.common.annotation.RunOnVirtualThread
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
@@ -9,6 +10,7 @@ import se.gredor.backend.rest.v1.filter.GredorRestResource
 
 @Path("/v1/ping/")
 @GredorRestResource(PerResourceString.PING)
+@RunOnVirtualThread
 class PingResource {
     /**
      * Returnerar "pong" för att bekräfta att servern är igång.

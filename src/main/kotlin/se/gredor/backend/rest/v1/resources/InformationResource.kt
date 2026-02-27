@@ -1,5 +1,6 @@
 package se.gredor.backend.rest.v1.resources
 
+import io.smallrye.common.annotation.RunOnVirtualThread
 import jakarta.inject.Inject
 import jakarta.validation.constraints.Pattern
 import jakarta.ws.rs.GET
@@ -14,6 +15,7 @@ import se.gredor.backend.rest.v1.filter.GredorRestResource
 
 @Path("/v1/information/")
 @GredorRestResource(PerResourceString.INFORMATION)
+@RunOnVirtualThread
 class InformationResource {
     @Inject
     private lateinit var bolagsverketService: BolagsverketService

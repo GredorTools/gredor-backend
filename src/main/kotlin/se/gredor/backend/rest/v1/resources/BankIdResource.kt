@@ -1,5 +1,6 @@
 package se.gredor.backend.rest.v1.resources
 
+import io.smallrye.common.annotation.RunOnVirtualThread
 import io.vertx.core.http.Cookie.cookie
 import io.vertx.core.http.CookieSameSite
 import io.vertx.ext.web.RoutingContext
@@ -28,6 +29,7 @@ import se.gredor.backend.rest.v1.util.resolveEndUserIp
 
 @Path("/v1/bankid/")
 @GredorRestResource(PerResourceString.BANK_ID)
+@RunOnVirtualThread
 class BankIdResource {
 
     private val ERROR_TEXT_INVALID_PARAMETERS = "Ogiltiga parametrar."
