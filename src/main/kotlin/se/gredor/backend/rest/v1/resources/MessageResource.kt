@@ -1,5 +1,6 @@
 package se.gredor.backend.rest.v1.resources
 
+import io.smallrye.common.annotation.RunOnVirtualThread
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -12,6 +13,7 @@ import se.gredor.backend.rest.v1.model.message.Message
 
 @Path("/v1/message/")
 @GredorRestResource(PerResourceString.MESSAGE)
+@RunOnVirtualThread
 class MessageResource {
 
     @Inject

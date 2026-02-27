@@ -1,6 +1,7 @@
 package se.gredor.backend.rest.v1.resources
 
 import io.quarkus.security.UnauthorizedException
+import io.smallrye.common.annotation.RunOnVirtualThread
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.ws.rs.CookieParam
@@ -18,6 +19,7 @@ import se.gredor.backend.rest.v1.model.auth.AuthStatusResponse
 
 @Path("/v1/auth/")
 @GredorRestResource(PerResourceString.AUTH)
+@RunOnVirtualThread
 class AuthResource {
     @Inject
     private lateinit var authService: AuthService

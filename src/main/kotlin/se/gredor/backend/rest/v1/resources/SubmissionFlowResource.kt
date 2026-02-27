@@ -1,5 +1,6 @@
 package se.gredor.backend.rest.v1.resources
 
+import io.smallrye.common.annotation.RunOnVirtualThread
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotNull
@@ -26,6 +27,7 @@ import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationReques
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
 @GredorRestResource(PerResourceString.SUBMISSION_FLOW)
+@RunOnVirtualThread
 class SubmissionFlowResource {
 
     @Inject
