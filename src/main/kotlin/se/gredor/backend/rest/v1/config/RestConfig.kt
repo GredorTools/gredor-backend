@@ -2,6 +2,7 @@ package se.gredor.backend.rest.v1.config
 
 import io.smallrye.config.ConfigMapping
 import io.smallrye.config.WithName
+import java.time.Instant
 import java.util.*
 
 @ConfigMapping(prefix = "gredor.rest.v1")
@@ -36,9 +37,15 @@ interface RestConfig {
         fun submissionFlow(): Optional<String>
     }
 
-    fun interface Message {
+    interface Message {
         @WithName("text")
         fun text(): String
+
+        @WithName("start-time")
+        fun startTime(): Optional<Instant>
+
+        @WithName("end-time")
+        fun endTime(): Optional<Instant>
     }
 
 }

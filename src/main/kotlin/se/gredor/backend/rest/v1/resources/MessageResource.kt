@@ -10,6 +10,7 @@ import se.gredor.backend.rest.v1.config.PerResourceString
 import se.gredor.backend.rest.v1.config.RestConfig
 import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.message.Message
+import java.time.Instant
 
 @Path("/v1/message/")
 @GredorRestResource(PerResourceString.MESSAGE)
@@ -27,6 +28,9 @@ class MessageResource {
     @Path("messages")
     @Produces(MediaType.APPLICATION_JSON)
     fun messages(): List<Message> {
-        return restConfig.messages().orElse(emptyList()).map { Message(text = it.text()) }
+        return restConfig.messages().orElse(emptyList())
+            .filter { !it.startTime().isPresent || it.startTime().get() <= Instant.now() }
+            .filter { !it.endTime().isPresent || Instant.now() < it.endTime().get() }
+            .map { Message(text = it.text()) }
     }
 }
