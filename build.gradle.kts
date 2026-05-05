@@ -1,9 +1,9 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.allopen") version "2.3.0"
-    kotlin("plugin.jpa") version "2.3.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("plugin.allopen") version "2.3.20"
+    kotlin("plugin.jpa") version "2.3.20"
     id("io.quarkus")
-    id("dev.drewhamilton.poko") version "0.20.2"
+    id("dev.drewhamilton.poko") version "0.22.1"
     id("jacoco")
 }
 
@@ -33,13 +33,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
 
-    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.16.0")
+    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.17.0")
     implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
 
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.21.0")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.21.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     implementation("se.swedenconnect.bankid:bankid-rp-api:1.2.5")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.google.zxing:javase:3.5.4")
 
