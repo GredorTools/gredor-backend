@@ -33,7 +33,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
 
-    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.16.0")
+    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.17.0")
     implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
 
     implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
