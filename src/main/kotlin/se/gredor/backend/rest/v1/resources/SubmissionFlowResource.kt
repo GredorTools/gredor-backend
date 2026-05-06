@@ -10,19 +10,18 @@ import jakarta.ws.rs.core.Response
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.ClientWebApplicationException
 import org.jboss.resteasy.reactive.server.ServerExceptionMapper
-import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.Fel
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.InlamningOK
 import org.openapi.quarkus.lamnaInArsredovisning_2_1_yaml.model.KontrolleraSvar
 import se.gredor.backend.auth.AuthConsts.PERSONAL_NUMBER_COOKIE_NAME
 import se.gredor.backend.auth.AuthenticationRequired
 import se.gredor.backend.bolagsverket.BolagsverketPreparationResponse
 import se.gredor.backend.bolagsverket.BolagsverketService
-import se.gredor.backend.exceptions.GeneralExceptionMapper.Companion.createTechnicalErrorResponse
 import se.gredor.backend.rest.v1.config.PerResourceString
 import se.gredor.backend.rest.v1.filter.GredorRestResource
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketPreparationRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketSubmissionRequest
 import se.gredor.backend.rest.v1.model.bolagsverket.BolagsverketValidationRequest
+import se.gredor.backend.rest.v1.util.handleBolagsverketWebApplicationException
 
 @Path("/v1/submission-flow/")
 @AuthenticationRequired
@@ -94,25 +93,6 @@ class SubmissionFlowResource {
 
     @ServerExceptionMapper
     fun handleClientWebApplicationException(exception: ClientWebApplicationException): Response {
-        if (exception.response.status == 400 && exception.response.hasEntity()) {
-            try {
-                val fel = exception.response.readEntity(Fel::class.java)
-                logger.error("Error from Bolagsverket: $fel")
-
-                return if (fel.kod == 9004) {
-                    // Felmeddelande "Tekniskt felaktig request" - detta beror troligtvis på fel i Gredor så vi
-                    // returnerar tekniskt fel
-                    createTechnicalErrorResponse()
-                } else {
-                    // Skicka annars vidare felmeddelandet från Bolagsverket
-                    Response.status(exception.response.status).type(MediaType.TEXT_PLAIN).entity(fel.text)
-                        .build()
-                }
-            } catch (_: ProcessingException) {
-                // Inte ett Fel-objekt
-            }
-        }
-
-        return createTechnicalErrorResponse()
+        return handleBolagsverketWebApplicationException(exception, logger)
     }
 }
