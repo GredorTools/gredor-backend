@@ -51,7 +51,7 @@ dependencies {
 }
 
 group = "se.gredor.backend"
-version = "1.2.2"
+version = "1.2.3"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
