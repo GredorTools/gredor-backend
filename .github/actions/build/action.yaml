@@ -3,9 +3,9 @@ name: Build
 description: Sätter upp JDK och Gradle, samt bygger och testar applikationen.
 
 inputs:
-  codecov_token:
-    description: "CODECOV_TOKEN"
-    required: false
+  sonar_token:
+    description: "SONAR_TOKEN"
+    required: true
 
 runs:
   using: composite
@@ -23,7 +23,8 @@ runs:
       run: ./gradlew build
       shell: bash
 
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ inputs.codecov_token }}
+    - name: SonarQube Scan
+      run: ./gradlew sonar
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar_token }}
+      shell: bash
