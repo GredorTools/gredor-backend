@@ -1,9 +1,0 @@
-ignore:
-  - "org/openapi/**"
-  - "**/*Mock.*"
-
-coverage:
-  status:
-    patch:
-      default:
-        target: 80%

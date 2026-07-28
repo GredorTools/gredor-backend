@@ -5,6 +5,7 @@ plugins {
     id("io.quarkus")
     id("dev.drewhamilton.poko") version "0.22.1"
     id("jacoco")
+    id("org.sonarqube") version "7.3.1.8318"
 }
 
 repositories {
@@ -114,5 +115,15 @@ tasks.withType<JacocoReport> {
     reports {
         xml.required = true
         html.required = false
+    }
+}
+
+// SonarQube
+sonar {
+    properties {
+        property("sonar.projectKey", "GredorTools_gredor-backend")
+        property("sonar.organization", "gredortools")
+
+        property("sonar.coverage.exclusions", "org/openapi/**,**/*Mock.*")
     }
 }
