@@ -39,7 +39,7 @@ Kör:
 När backenden sedan körs måste följande miljövariabler vara satta:
 
 ```
-QUARKUS_PROFILE=<normalt "acc" eller "prod" beorende på miljötyp>
+QUARKUS_PROFILE=<normalt "acc" eller "prod" beorende på miljötyp; sätts inte variabeln kör Gredor automatiskt i "dev"-läge med mockade integrationer mot BankID och Bolagsverket>
 GREDOR_DATABASE_PATH=<path till din sqlite-databas (filen skapas automatiskt)>
 GREDOR_EXTRA_CONFIG_PATH=<path till din gredor-config.yml (se nedan)>
 GREDOR_SECRETS_CONFIG_PATH=<path till din gredor-secrets.yml (se nedan)>
