@@ -34,14 +34,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.quarkus:quarkus-arc")
 
-    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.21.0")
+    implementation("io.quarkiverse.openapi.generator:quarkus-openapi-generator:2.23.0")
     implementation("io.quarkiverse.jdbc:quarkus-jdbc-sqlite:3.0.11")
 
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     implementation("se.swedenconnect.bankid:bankid-rp-api:1.2.5")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.84")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.85.2")
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.google.zxing:javase:3.5.4")
 
