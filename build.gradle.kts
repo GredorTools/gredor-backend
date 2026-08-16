@@ -52,7 +52,7 @@ dependencies {
 }
 
 group = "se.gredor.backend"
-version = "1.2.4"
+version = "1.2.5"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_25
